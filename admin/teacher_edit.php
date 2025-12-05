@@ -1,9 +1,39 @@
+<?php
+session_start();
+require_once '../config.php';
+
+// فقط مدیر
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: /attendance-system/login.php");
+    exit;
+}
+
+if (!isset($_GET['id'])) {
+    header("Location: teachers.php");
+    exit;
+}
+
+$id = intval($_GET['id']);
+
+// گرفتن اطلاعات دبیر
+$stmt = $conn->prepare("SELECT id, first_name, last_name, username FROM users WHERE id=? AND role='teacher'");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$teacher = $result->fetch_assoc();
+$stmt->close();
+
+if (!$teacher) {
+    die("دبیر پیدا نشد.");
+}
+?>
+
 <!doctype html>
 <html lang="fa" dir="rtl">
 
 <head>
     <meta charset="utf-8">
-    <title>افزودن دبیر جدید - سامانه حضور غیاب هنرستان سپهری راد</title>
+    <title>ویرایش دبیر - سامانه حضور غیاب هنرستان سپهری راد</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -24,12 +54,6 @@
                 transform: translateX(0);
             }
         }
-
-        .input-focus:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
     </style>
 
 </head>
@@ -39,14 +63,18 @@
     <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg></button> <!-- Overlay for mobile -->
+        </svg>
+    </button>
+    <!-- Overlay for mobile -->
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div><!-- Sidebar -->
     <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
-        <div class="h-full flex flex-col"><!-- Logo & Title -->
+        <div class="h-full flex flex-col">
+            <!-- Logo & Title -->
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-1">هنرستان سپهری راد</h1>
                 <p class="text-blue-100 text-sm">سامانه حضور و غیاب</p>
-            </div><!-- Navigation Menu -->
+            </div>
+            <!-- Navigation Menu -->
             <nav class="flex-1 p-4 overflow-y-auto">
                 <ul class="space-y-2">
                     <li><a href="teachers.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium">
@@ -67,7 +95,7 @@
                             </svg> برنامه زمانی </a></li>
                 </ul>
             </nav><!-- Footer -->
-        <div class="p-4 border-t border-gray-200">
+      <div class="p-4 border-t border-gray-200">
                 <a href="/attendance-system/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,30 +107,24 @@
                 </a>
             </div>
         </div>
-    </aside>
-    <!-- Main Content -->
+    </aside><!-- Main Content -->
     <div class="min-h-screen lg:mr-64">
-        <div class="w-full min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-2xl mx-auto">
-                <!-- Header -->
+        <div class="p-4 sm:p-6 lg:p-8">
+            <div class="w-full max-w-3xl mx-auto"><!-- Header -->
                 <div class="mb-6">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">افزودن دبیر جدید</h1>
-                    <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
-                </div>
-                <!-- Main Card -->
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ویرایش دبیر</h1>
+                    <p class="text-gray-600 text-sm sm:text-base">ویرایش اطلاعات دبیر در سیستم</p>
+                </div><!-- Form Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div class="p-6 sm:p-8"><!-- Flash Message Placeholder -->
-                        <form action="teacher_add_action.php" method="POST" class="space-y-6"><!-- First Name -->
-                            <div><label for="first_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام <span class="text-red-500">*</span> </label> <input type="text" id="first_name" name="first_name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام را وارد کنید">
-                            </div>
-                            <!-- Last Name -->
-                            <div><label for="last_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام خانوادگی <span class="text-red-500">*</span> </label> <input type="text" id="last_name" name="last_name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام خانوادگی را وارد کنید">
+                    <div class="p-6">
+                        <form action="teacher_update.php" method="POST" class="space-y-6"><input type="hidden" name="id" value="<?= $teacher['id'] ?>"> <!-- First Name -->
+                            <div><label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">نام</label> <input type="text" id="first_name" name="first_name" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['first_name']) ?>">
+                            </div><!-- Last Name -->
+                            <div><label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">نام خانوادگی</label> <input type="text" id="last_name" name="last_name" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['last_name']) ?>">
                             </div><!-- Username -->
-                            <div><label for="username" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام کاربری <span class="text-red-500">*</span> </label> <input type="text" id="username" name="username" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام کاربری را وارد کنید">
-                            </div><!-- Password -->
-                            <div><label for="password" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> رمز عبور <span class="text-red-500">*</span> </label> <input type="password" id="password" name="password" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="رمز عبور را وارد کنید">
+                            <div><label for="username" class="block text-sm font-medium text-gray-700 mb-2">نام کاربری</label> <input type="text" id="username" name="username" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['username']) ?>">
                             </div><!-- Action Buttons -->
-                            <div class="flex flex-col sm:flex-row gap-3 pt-4"><button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base"> افزودن دبیر </button> <a href="teachers.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base"> بازگشت به لیست دبیران </a>
+                            <div class="flex flex-col sm:flex-row gap-3 pt-4"><button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"> ذخیره تغییرات </button> <a href="teachers.php" class="w-full sm:w-auto px-6 py-2.5 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 text-center"> لغو </a>
                             </div>
                         </form>
                     </div>
@@ -119,5 +141,7 @@
             overlay.classList.toggle('hidden');
         }
     </script>
+
+</body>
 
 </html>
