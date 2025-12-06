@@ -84,16 +84,16 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                 </ul>
             </nav><!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-    <a href="/attendance-system/logout.php" 
-       class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-            </path>
-        </svg>
-        خروج
-    </a>
-</div>
+                <a href="/attendance-system/logout.php"
+                    class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    خروج
+                </a>
+            </div>
 
         </div>
     </aside><!-- Main Content -->
@@ -173,11 +173,10 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 
                                 <select id="schedule" name="schedule" required
                                     class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
-
                                     <option value="1">زنگ اول</option>
                                     <option value="2">زنگ دوم</option>
                                     <option value="3">زنگ سوم</option>
-
+                                    <option value="4">زنگ چهارم</option>
                                 </select>
                             </div>
 
