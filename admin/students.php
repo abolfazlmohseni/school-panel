@@ -3,15 +3,23 @@ session_start();
 require_once '../config.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
 // فقط مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: /attendance-system/login.php");
     exit;
 }
 
-// پیام فلش
+// پیام‌های مختلف از session
 $msg = $_SESSION['msg'] ?? '';
+$warning = $_SESSION['warning'] ?? '';
+$error = $_SESSION['error'] ?? '';
+
+// پاک کردن پیام‌ها بعد از نمایش
 unset($_SESSION['msg']);
+unset($_SESSION['warning']);
+unset($_SESSION['error']);
+
 
 // جستجو
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
@@ -94,16 +102,16 @@ $result = $conn->query($sql);
                 </ul>
             </nav><!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-    <a href="/attendance-system/logout.php" 
-       class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-            </path>
-        </svg>
-        خروج
-    </a>
-</div>
+                <a href="/attendance-system/logout.php"
+                    class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    خروج
+                </a>
+            </div>
 
         </div>
     </aside><!-- Main Content -->
@@ -127,9 +135,22 @@ $result = $conn->query($sql);
                     </div>
 
                     <!-- Flash Message -->
+                    <!-- Flash Messages -->
                     <?php if ($msg): ?>
                         <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                            <p class="text-green-800 text-sm sm:text-base"><?= htmlspecialchars($msg) ?></p>
+                            <p class="text-green-800 text-sm sm:text-base">✅ <?= htmlspecialchars($msg) ?></p>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($warning): ?>
+                        <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <p class="text-yellow-800 text-sm sm:text-base">⚠️ <?= htmlspecialchars($warning) ?></p>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($error): ?>
+                        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <p class="text-red-800 text-sm sm:text-base">❌ <?= htmlspecialchars($error) ?></p>
                         </div>
                     <?php endif; ?>
 
