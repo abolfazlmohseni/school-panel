@@ -50,7 +50,7 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg></button> <!-- Overlay for mobile -->
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div><!-- Sidebar -->
-  <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
+    <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col"><!-- Logo & Title -->
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-1">هنرستان سپهری راد</h1>
@@ -81,16 +81,16 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
                 </ul>
             </nav><!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-    <a href="/attendance-system/logout.php" 
-       class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-            </path>
-        </svg>
-        خروج
-    </a>
-</div>
+                <a href="/attendance-system/logout.php"
+                    class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    خروج
+                </a>
+            </div>
 
         </div>
     </aside><!-- Main Content -->
@@ -146,7 +146,9 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
                                 <?php endwhile; ?>
                             </select>
 
-                            <div><label for="excel_file" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">انتخاب فایل اکسل (.xlsx) <span class="text-red-500">*</span></label> <input type="file" id="excel_file" name="excel_file" accept=".xlsx" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base">
+                            <div><label for="excel_file" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">انتخاب فایل اکسل (.xlsx) <span class="text-red-500">*</span></label>
+                                <!-- در قسمت فرم آپلود اکسل، خط زیر را تغییر دهید: -->
+                                <input type="file" id="excel_file" name="excel_file" accept=".csv,.xlsx,.xls" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base">
                             </div>
                             <div class="pt-4"><button type="submit" class="w-full px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm sm:text-base">آپلود و ثبت دانش‌آموزان</button>
                             </div>
