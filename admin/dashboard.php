@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
@@ -12,30 +11,25 @@ $admin_id = $_SESSION['user_id'];
 $full_name = $_SESSION['full_name'] ?? '';
 $first_name = $_SESSION['first_name'] ?? '';
 
-// ---------- آمار از دیتابیس ----------
 
-// ۱. تعداد دانش‌آموزان
 $stmt = $conn->prepare("SELECT COUNT(*) as total FROM students");
 $stmt->execute();
 $result = $stmt->get_result();
 $total_students = $result->fetch_assoc()['total'];
 $stmt->close();
 
-// ۲. تعداد کلاس‌ها
 $stmt = $conn->prepare("SELECT COUNT(*) as total FROM classes");
 $stmt->execute();
 $result = $stmt->get_result();
 $total_classes = $result->fetch_assoc()['total'];
 $stmt->close();
 
-// ۳. تعداد دبیران
 $stmt = $conn->prepare("SELECT COUNT(*) as total FROM users WHERE role = 'teacher'");
 $stmt->execute();
 $result = $stmt->get_result();
 $total_teachers = $result->fetch_assoc()['total'];
 $stmt->close();
 
-// ۴. درصد حضور امروز
 $today = date('Y-m-d');
 $stmt = $conn->prepare("
     SELECT 
@@ -54,7 +48,7 @@ $today_attendance_rate = $attendance_data['total_records'] > 0
     ? round(($attendance_data['present_count'] / $attendance_data['total_records']) * 100, 0)
     : 0;
 
-// ۵. تعداد کلاس‌های امروز
+
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -78,7 +72,6 @@ $result = $stmt->get_result();
 $today_classes_count = $result->fetch_assoc()['total'];
 $stmt->close();
 
-// ۶. آخرین حضور و غیاب‌ها (برای جدول)
 $stmt = $conn->prepare("
     SELECT 
         a.id,
@@ -102,7 +95,6 @@ $result = $stmt->get_result();
 $recent_attendance = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// ۷. کلاس‌های امروز با جزئیات
 $stmt = $conn->prepare("
     SELECT 
         p.id as program_id,
@@ -127,7 +119,6 @@ $result = $stmt->get_result();
 $today_classes_detail = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// ۸. دبیران فعال
 $stmt = $conn->prepare("
     SELECT 
         id,
@@ -144,7 +135,6 @@ $result = $stmt->get_result();
 $active_teachers = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// تاریخ امروز به شمسی
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -349,7 +339,8 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-white bg-opacity-20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                    </path>
                                 </svg>
                             </div>
                             <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
@@ -604,9 +595,12 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                                 <?php echo mb_substr($teacher['first_name'], 0, 1, 'UTF-8') . mb_substr($teacher['last_name'], 0, 1, 'UTF-8'); ?>
                                             </span>
                                         </div>
-                                        <div class="font-medium text-gray-900"><?php echo htmlspecialchars($teacher['first_name']); ?></div>
-                                        <div class="text-sm text-gray-600"><?php echo htmlspecialchars($teacher['last_name']); ?></div>
-                                        <div class="text-xs text-gray-500 mt-1"><?php echo htmlspecialchars($teacher['username']); ?></div>
+                                        <div class="font-medium text-gray-900"><?php echo htmlspecialchars($teacher['first_name']); ?>
+                                        </div>
+                                        <div class="text-sm text-gray-600"><?php echo htmlspecialchars($teacher['last_name']); ?>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-1"><?php echo htmlspecialchars($teacher['username']); ?>
+                                        </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
@@ -641,7 +635,6 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
             overlay.classList.toggle('hidden');
         }
 
-        // رفرش خودکار صفحه هر 2 دقیقه برای آمار به روز
         setTimeout(function() {
             location.reload();
         }, 2 * 60 * 1000);

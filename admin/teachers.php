@@ -2,13 +2,11 @@
 session_start();
 require_once '../config.php';
 
-// فقط مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: /attendance-system/login.php");
     exit;
 }
 
-// حذف دبیر
 if (isset($_GET['delete_id'])) {
     $id = intval($_GET['delete_id']);
     $del = $conn->prepare("DELETE FROM users WHERE id = ? AND role = 'teacher'");
@@ -20,11 +18,9 @@ if (isset($_GET['delete_id'])) {
     exit;
 }
 
-// پیام فلش
 $msg = $_SESSION['msg'] ?? '';
 unset($_SESSION['msg']);
 
-// گرفتن لیست دبیران
 $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM users WHERE role='teacher' ORDER BY id DESC");
 ?>
 

@@ -245,8 +245,6 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                             </div>
 
                         </form>
-
-
                     </div>
                 </div>
 

@@ -27,8 +27,6 @@ $allowed_days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 
 if (!in_array($day_of_week, $allowed_days)) {
     die("مقدار روز هفته معتبر نیست.");
 }
-
-// به‌روزرسانی برنامه
 $sql = "UPDATE programs SET 
         class_id=$class_id, 
         teacher_id=$teacher_id, 

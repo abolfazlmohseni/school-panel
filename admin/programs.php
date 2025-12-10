@@ -154,13 +154,15 @@ $result = $conn->query($sql);
     <!-- Main Content -->
     <div class="min-h-screen lg:mr-64">
         <div class="p-4 sm:p-6 lg:p-8">
-            <div class="w-full"><!-- Header -->
+            <div class="w-full">
+                <!-- Header -->
                 <div class="mb-6">
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">لیست برنامه‌ها</h1>
                     <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
                 </div><!-- Main Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div class="p-4 sm:p-6"><!-- Action Bar -->
+                    <div class="p-4 sm:p-6">
+                        <!-- Action Bar -->
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                             <h2 class="text-lg sm:text-xl font-semibold text-gray-900">برنامه کلاسی</h2><a href="program_add.php" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center text-sm sm:text-base"> افزودن برنامه جدید </a>
                         </div><!-- Table Container -->
@@ -236,7 +238,8 @@ $result = $conn->query($sql);
                             </table>
                         </div>
                     </div>
-                </div><!-- Info Box -->
+                </div>
+                <!-- Info Box -->
                 <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p class="text-blue-800 text-xs sm:text-sm">💡 برنامه زمانی مشخص می‌کند که کدام دبیر، در کدام روز و زنگ، کدام کلاس را تدریس می‌کند.</p>
                 </div>

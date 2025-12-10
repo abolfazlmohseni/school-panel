@@ -52,7 +52,7 @@ $result = $conn->query($sql);
     </style>
 </head>
 
-<body class="min-h-full bg-gray-100"> 
+<body class="min-h-full bg-gray-100">
     <!-- Mobile Menu Button -->
     <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
@@ -152,18 +152,26 @@ $result = $conn->query($sql);
     <!-- Main Content -->
     <div class="min-h-screen lg:mr-64">
         <div class="p-4 sm:p-6 lg:p-8">
-            <div class="w-full"><!-- Header -->
+            <div class="w-full">
+                <!-- Header -->
                 <div class="mb-6">
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">لیست کلاس‌ها</h1>
                     <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
-                </div><!-- Main Card -->
+                </div>
+                <!-- Main Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div class="p-4 sm:p-6"><!-- Action Bar -->
+                    <div class="p-4 sm:p-6">
+                        <!-- Action Bar -->
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                            <h2 class="text-lg sm:text-xl font-semibold text-gray-900">مدیریت کلاس‌ها</h2><a href="class_add.php" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center text-sm sm:text-base"> افزودن کلاس جدید </a>
-                        </div><!-- Search Form -->
-                        <form method="GET" class="mb-6 flex flex-col sm:flex-row gap-3"><input type="text" name="search" placeholder="جستجو بر اساس نام کلاس ..." value="<?= htmlspecialchars($search) ?>" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm sm:text-base"> <button type="submit" class="px-6 py-2.5 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm sm:text-base">جستجو</button>
-                        </form><!-- Table Container -->
+                            <h2 class="text-lg sm:text-xl font-semibold text-gray-900">مدیریت کلاس‌ها</h2>
+                            <a href="class_add.php" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center text-sm sm:text-base"> افزودن کلاس جدید </a>
+                        </div>
+                        <!-- Search Form -->
+                        <form method="GET" class="mb-6 flex flex-col sm:flex-row gap-3">
+                            <input type="text" name="search" placeholder="جستجو بر اساس نام کلاس ..." value="<?= htmlspecialchars($search) ?>" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm sm:text-base">
+                            <button type="submit" class="px-6 py-2.5 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm sm:text-base">جستجو</button>
+                        </form>
+                        <!-- Table Container -->
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-gray-50 border-b-2 border-gray-200">
@@ -224,7 +232,8 @@ $result = $conn->query($sql);
                             </table>
                         </div>
                     </div>
-                </div><!-- Info Box -->
+                </div>
+                <!-- Info Box -->
                 <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p class="text-blue-800 text-xs sm:text-sm">💡 با کلیک روی نام هر کلاس، می‌توانید دانش‌آموزان آن کلاس را مشاهده کنید.</p>
                 </div>

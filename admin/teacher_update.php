@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// فقط مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: /attendance-system/login.php");
     exit;
@@ -18,7 +17,6 @@ $first_name = $conn->real_escape_string($_POST['first_name']);
 $last_name = $conn->real_escape_string($_POST['last_name']);
 $username = $conn->real_escape_string($_POST['username']);
 
-// به‌روزرسانی دبیر
 $stmt = $conn->prepare("UPDATE users SET first_name=?, last_name=?, username=? WHERE id=? AND role='teacher'");
 $stmt->bind_param("sssi", $first_name, $last_name, $username, $id);
 
