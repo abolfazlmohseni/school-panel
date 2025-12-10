@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
-// گرفتن لیست کلاس‌ها برای سلکت‌باکس
 $classes_result = $conn->query("SELECT id, name FROM classes");
 ?>
 
@@ -146,22 +145,38 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
     <!-- Main Content -->
     <div class="min-h-screen lg:mr-64">
         <div class="w-full min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-3xl mx-auto"><!-- Header -->
+            <div class="max-w-3xl mx-auto">
+                <!-- Header -->
                 <div class="mb-6">
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">افزودن دانش‌آموز جدید</h1>
                     <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
-                </div><!-- Single Student Form Card -->
+                </div>
+                <!-- Single Student Form Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
                     <div class="p-6 sm:p-8">
                         <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-6">افزودن یک دانش‌آموز</h2>
                         <form action="student_add_action.php" method="POST" class="space-y-6">
-                            <div><label for="first_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">نام <span class="text-red-500">*</span></label> <input type="text" id="first_name" name="first_name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام را وارد کنید">
+                            <div>
+                                <label for="first_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">نام
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="first_name" name="first_name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام را وارد کنید">
                             </div>
-                            <div><label for="last_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">نام خانوادگی <span class="text-red-500">*</span></label> <input type="text" id="last_name" name="last_name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام خانوادگی را وارد کنید">
+                            <div>
+                                <label for="last_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">نام خانوادگی
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="last_name" name="last_name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام خانوادگی را وارد کنید">
                             </div>
-                            <div><label for="national_code" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">کد ملی <span class="text-red-500">*</span></label> <input type="text" id="national_code" name="national_code" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="کد ملی را وارد کنید">
+                            <div>
+                                <label for="national_code" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">کد ملی
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="national_code" name="national_code" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="کد ملی را وارد کنید">
                             </div>
-                            <div><label for="phone" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">شماره تماس</label> <input type="text" id="phone" name="phone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="شماره تماس را وارد کنید">
+                            <div>
+                                <label for="phone" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">شماره تماس</label>
+                                <input type="text" id="phone" name="phone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="شماره تماس را وارد کنید">
                             </div>
                             <select id="class_id" name="class_id" required
                                 class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base">
@@ -174,11 +189,14 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
                                     </option>
                                 <?php endwhile; ?>
                             </select>
-                            <div class="flex flex-col sm:flex-row gap-3 pt-4"><button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base">ذخیره دانش‌آموز</button> <a href="students.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base">بازگشت به لیست</a>
+                            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base">ذخیره دانش‌آموز</button>
+                                <a href="students.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base">بازگشت به لیست</a>
                             </div>
                         </form>
                     </div>
-                </div><!-- Bulk Upload Form Card -->
+                </div>
+                <!-- Bulk Upload Form Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6 sm:p-8">
                         <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">افزودن چند دانش‌آموز با فایل اکسل</h2>
@@ -196,15 +214,19 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
                                 <?php endwhile; ?>
                             </select>
 
-                            <div><label for="excel_file" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">انتخاب فایل اکسل (.xlsx) <span class="text-red-500">*</span></label>
+                            <div>
+                                <label for="excel_file" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">انتخاب فایل اکسل (.xlsx) <span class="text-red-500">*</span>
+                                </label>
                                 <!-- در قسمت فرم آپلود اکسل، خط زیر را تغییر دهید: -->
                                 <input type="file" id="excel_file" name="excel_file" accept=".csv,.xlsx,.xls" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base">
                             </div>
-                            <div class="pt-4"><button type="submit" class="w-full px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm sm:text-base">آپلود و ثبت دانش‌آموزان</button>
+                            <div class="pt-4">
+                                <button type="submit" class="w-full px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm sm:text-base">آپلود و ثبت دانش‌آموزان</button>
                             </div>
                         </form>
                     </div>
-                </div><!-- Info Box -->
+                </div>
+                <!-- Info Box -->
                 <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p class="text-blue-800 text-xs sm:text-sm">💡 فایل اکسل باید به ترتیب شامل ستون‌های نام، نام خانوادگی، کد ملی و شماره تماس باشد.</p>
                 </div>

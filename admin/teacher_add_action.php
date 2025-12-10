@@ -2,13 +2,11 @@
 session_start();
 require_once '../config.php';
 
-// فقط مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: /attendance-system/login.php");
     exit;
 }
 
-// گرفتن داده‌ها و پاکسازی اولیه
 $first_name = isset($_POST['first_name']) ? trim($_POST['first_name']) : '';
 $last_name = isset($_POST['last_name']) ? trim($_POST['last_name']) : '';
 $username = isset($_POST['username']) ? trim($_POST['username']) : '';
@@ -20,7 +18,6 @@ if ($first_name === '' || $last_name === '' || $username === '' || $password ===
     exit;
 }
 
-// بررسی تکراری نبودن username
 $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? LIMIT 1");
 $stmt->bind_param('s', $username);
 $stmt->execute();
@@ -33,10 +30,8 @@ if ($stmt->num_rows > 0) {
 }
 $stmt->close();
 
-// هش پسورد امن
 $hashed = password_hash($password, PASSWORD_DEFAULT);
 
-// درج در دیتابیس
 $insert = $conn->prepare("INSERT INTO users (username, password, role, first_name, last_name) VALUES (?, ?, 'teacher', ?, ?)");
 $insert->bind_param('ssss', $username, $hashed, $first_name, $last_name);
 

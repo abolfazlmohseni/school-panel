@@ -2,8 +2,12 @@
 session_start();
 require_once 'config.php';
 
+// پاک کردن ارورهای قبلی
+unset($_SESSION['login_error']);
+
 if (!isset($_POST['username']) || !isset($_POST['password'])) {
-    echo "ورودی نامعتبر.";
+    $_SESSION['login_error'] = "ورودی نامعتبر.";
+    header("Location: login.php");
     exit;
 }
 
@@ -30,6 +34,9 @@ if ($result->num_rows === 1) {
         $_SESSION['last_name'] = $user['last_name'];
         $_SESSION['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
 
+        // پاک کردن هرگونه ارور احتمالی
+        unset($_SESSION['login_error']);
+
         if ($user['role'] === 'admin') {
             header("Location: admin/dashboard.php");
             exit;
@@ -38,10 +45,14 @@ if ($result->num_rows === 1) {
             exit;
         }
     } else {
-        echo "رمز عبور اشتباه است.";
+        $_SESSION['login_error'] = "رمز عبور اشتباه است.";
+        header("Location: login.php");
+        exit;
     }
 } else {
-    echo "کاربر یافت نشد.";
+    $_SESSION['login_error'] = "کاربر یافت نشد.";
+    header("Location: login.php");
+    exit;
 }
 
 $stmt->close();

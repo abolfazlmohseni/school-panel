@@ -1,25 +1,20 @@
 <?php
-// ابتدا session_start
 session_start();
 
-// فعال کردن خطاها
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 error_log("send_sms_process.php شروع شد - POST: " . print_r($_POST, true));
 require_once '../config.php';
 
-// چک session و نقش
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     $_SESSION['error'] = 'لطفاً ابتدا وارد شوید';
     header("Location: ../login.php");
     exit();
 }
 
-// دریافت و اعتبارسنجی داده‌های فرم
 $message = trim($_POST['message'] ?? '');
 
-// اعتبارسنجی
 if (empty($message)) {
     $_SESSION['sms_error'] = 'متن پیامک نمی‌تواند خالی باشد.';
     header("Location: send_sms.php");
@@ -32,10 +27,8 @@ if (strlen($message) > 160) {
     exit();
 }
 
-// تاریخ امروز
 $today = date('Y-m-d');
 
-// ---------- دریافت غایبین امروز ----------
 try {
     $stmt = $conn->prepare("
         SELECT DISTINCT
@@ -73,10 +66,8 @@ try {
     exit();
 }
 
-// ---------- تابع تبدیل تاریخ ----------
 function gregorian_to_jalali($gy, $gm, $gd)
 {
-    // ... همان تابع قبلی ...
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
     $gy2 = ($gm > 2) ? ($gy + 1) : $gy;
     $days = 355666 + (365 * $gy) + ((int)(($gy2 + 3) / 4)) - ((int)(($gy2 + 99) / 100)) + ((int)(($gy2 + 399) / 400)) + $gd + $g_d_m[$gm - 1];
@@ -98,18 +89,15 @@ function gregorian_to_jalali($gy, $gm, $gd)
     return array($jy, $jm, $jd);
 }
 
-// تاریخ شمسی
 $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $persian_date = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// ---------- ارسال پیامک ----------
 $success_count = 0;
 $failed_count = 0;
 $failed_numbers = [];
 $failed_names = [];
 
-// اگر گیرنده‌ای وجود ندارد
 if (count($recipients) == 0) {
     $_SESSION['sms_result'] = [
         'success_count' => 0,
@@ -125,17 +113,14 @@ if (count($recipients) == 0) {
     exit();
 }
 
-// ارسال پیامک‌ها
 foreach ($recipients as $recipient) {
     $phone = trim($recipient['phone']);
 
-    // شخصی‌سازی پیام
     $personalized_message = $message;
     $personalized_message = str_replace('{name}', $recipient['first_name'] . ' ' . $recipient['last_name'], $personalized_message);
     $personalized_message = str_replace('{class}', $recipient['class_name'], $personalized_message);
     $personalized_message = str_replace('{date}', $persian_date, $personalized_message);
 
-    // شبیه‌سازی ارسال (90% موفقیت)
     $random = rand(1, 100);
 
     if ($random <= 90) {
@@ -150,7 +135,6 @@ foreach ($recipients as $recipient) {
         $api_response = 'خطای شبیه‌سازی (حالت تست)';
     }
 
-    // ذخیره در دیتابیس
     try {
         $stmt = $conn->prepare("
             INSERT INTO sms_logs 
@@ -160,7 +144,7 @@ foreach ($recipients as $recipient) {
 
         if (!$stmt) {
             error_log("خطای آماده‌سازی INSERT: " . $conn->error);
-            continue; // ادامه به رکورد بعدی
+            continue; 
         }
 
         $admin_id = $_SESSION['user_id'];
@@ -188,7 +172,6 @@ foreach ($recipients as $recipient) {
     }
 }
 
-// ذخیره نتایج در session
 $_SESSION['sms_result'] = [
     'success_count' => $success_count,
     'failed_count' => $failed_count,
@@ -201,6 +184,5 @@ $_SESSION['sms_result'] = [
     'recipient_count' => count($recipients)
 ];
 
-// هدایت به صفحه نتیجه
 header("Location: sms_result.php");
 exit();

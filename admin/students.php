@@ -4,24 +4,20 @@ require_once '../config.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// فقط مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: /attendance-system/login.php");
     exit;
 }
 
-// پیام‌های مختلف از session
 $msg = $_SESSION['msg'] ?? '';
 $warning = $_SESSION['warning'] ?? '';
 $error = $_SESSION['error'] ?? '';
 
-// پاک کردن پیام‌ها بعد از نمایش
 unset($_SESSION['msg']);
 unset($_SESSION['warning']);
 unset($_SESSION['error']);
 
 
-// جستجو
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
 $sql = "SELECT s.id, s.first_name, s.last_name, s.national_code, s.phone, c.name AS class_name
@@ -66,7 +62,7 @@ $result = $conn->query($sql);
     </style>
 </head>
 
-<body class="min-h-full bg-gray-100"> 
+<body class="min-h-full bg-gray-100">
     <!-- Mobile Menu Button -->
     <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
@@ -84,7 +80,7 @@ $result = $conn->query($sql);
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-1">هنرستان سپهری راد</h1>
                 <p class="text-blue-100 text-sm">سامانه حضور و غیاب</p>
-         
+
             </div>
 
             <!-- Navigation Menu -->
@@ -185,7 +181,6 @@ $result = $conn->query($sql);
                     </div>
 
                     <!-- Flash Message -->
-                    <!-- Flash Messages -->
                     <?php if ($msg): ?>
                         <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                             <p class="text-green-800 text-sm sm:text-base">✅ <?= htmlspecialchars($msg) ?></p>

@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// فقط مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: /attendance-system/login.php");
     exit;
@@ -15,7 +14,6 @@ if (!isset($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// گرفتن اطلاعات دبیر
 $stmt = $conn->prepare("SELECT id, first_name, last_name, username FROM users WHERE id=? AND role='teacher'");
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -158,21 +156,35 @@ if (!$teacher) {
     <!-- Main Content -->
     <div class="min-h-screen lg:mr-64">
         <div class="p-4 sm:p-6 lg:p-8">
-            <div class="w-full max-w-3xl mx-auto"><!-- Header -->
+            <div class="w-full max-w-3xl mx-auto">
+                <!-- Header -->
                 <div class="mb-6">
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ویرایش دبیر</h1>
                     <p class="text-gray-600 text-sm sm:text-base">ویرایش اطلاعات دبیر در سیستم</p>
-                </div><!-- Form Card -->
+                </div>
+                <!-- Form Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6">
-                        <form action="teacher_update.php" method="POST" class="space-y-6"><input type="hidden" name="id" value="<?= $teacher['id'] ?>"> <!-- First Name -->
-                            <div><label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">نام</label> <input type="text" id="first_name" name="first_name" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['first_name']) ?>">
-                            </div><!-- Last Name -->
-                            <div><label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">نام خانوادگی</label> <input type="text" id="last_name" name="last_name" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['last_name']) ?>">
-                            </div><!-- Username -->
-                            <div><label for="username" class="block text-sm font-medium text-gray-700 mb-2">نام کاربری</label> <input type="text" id="username" name="username" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['username']) ?>">
-                            </div><!-- Action Buttons -->
-                            <div class="flex flex-col sm:flex-row gap-3 pt-4"><button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"> ذخیره تغییرات </button> <a href="teachers.php" class="w-full sm:w-auto px-6 py-2.5 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 text-center"> لغو </a>
+                        <form action="teacher_update.php" method="POST" class="space-y-6">
+                            <input type="hidden" name="id" value="<?= $teacher['id'] ?>">
+                            <!-- First Name -->
+                            <div>
+                                <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">نام</label> <input type="text" id="first_name" name="first_name" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['first_name']) ?>">
+                            </div>
+                            <!-- Last Name -->
+                            <div>
+                                <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">نام خانوادگی</label>
+                                <input type="text" id="last_name" name="last_name" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['last_name']) ?>">
+                            </div>
+                            <!-- Username -->
+                            <div>
+                                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">نام کاربری</label>
+                                <input type="text" id="username" name="username" required class="w-full border border-gray-300 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" value="<?= htmlspecialchars($teacher['username']) ?>">
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                                <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"> ذخیره تغییرات </button>
+                                <a href="teachers.php" class="w-full sm:w-auto px-6 py-2.5 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 text-center"> لغو </a>
                             </div>
                         </form>
                     </div>

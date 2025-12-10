@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
@@ -13,10 +12,8 @@ $first_name = $_SESSION['first_name'] ?? 'مدیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// دریافت تاریخ امروز
 $today = date('Y-m-d');
 
-// ---------- دریافت غایبین امروز ----------
 $stmt = $conn->prepare("
     SELECT DISTINCT
         CONCAT(s.first_name, ' ', s.last_name) as name,
@@ -37,14 +34,12 @@ $result = $stmt->get_result();
 $recipients = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// آمار
 $total_recipients = count($recipients);
 
-// متن پیش‌فرض پیامک
 $default_message = "والد محترم
 دانش‌آموز {name} کلاس {class} امروز {date} غایب بود.
 هنرستان سپهری راد";
-// تاریخ شمسی
+
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -72,7 +67,6 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// آرایه روزهای هفته فارسی
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -455,7 +449,7 @@ $today_persian = $weekdays_persian[$weekday_number];
                         </div>
                     </div>
                 <?php else: ?>
-                    <!-- حالت بدون گیرنده -->
+
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
                         <div class="text-green-500 text-6xl mb-4">
                             <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewbox="0 0 24 24">
@@ -499,21 +493,14 @@ $today_persian = $weekdays_persian[$weekday_number];
             overlay.classList.toggle('hidden');
         }
 
-        // شمارش کاراکترها
         function updateCharCount(textarea) {
             const text = textarea.value;
 
-            // شمارش کاراکترهای فارسی به درستی
             let charCount = 0;
             for (let i = 0; i < text.length; i++) {
                 const charCode = text.charCodeAt(i);
-                // کاراکترهای فارسی معمولاً بین 0x0600 تا 0x06FF هستند
-                // همچنین کاراکترهای عادی انگلیسی و ...
                 charCount++;
             }
-
-            // یا ساده‌تر:
-            // charCount = text.length;
 
             const charCountElement = document.getElementById('charCount');
             charCountElement.textContent = `${text.length}/160 کاراکتر`;
@@ -532,7 +519,6 @@ $today_persian = $weekdays_persian[$weekday_number];
             return text.length;
         }
 
-        // بازنشانی متن
         function resetMessage() {
             const defaultMessage = `والد محترم، سلام
 دانش‌آموز {name} در کلاس {class} امروز {date} غایب بوده است.
@@ -542,11 +528,9 @@ $today_persian = $weekdays_persian[$weekday_number];
             document.getElementById('message').value = defaultMessage;
             updateCharCount(document.getElementById('message'));
 
-            // مخفی کردن پیش‌نمایش
             document.getElementById('previewBox').classList.add('hidden');
         }
 
-        // نمایش پیش‌نمایش
         function showPreview() {
             const message = document.getElementById('message').value;
             const previewContent = message
@@ -558,7 +542,6 @@ $today_persian = $weekdays_persian[$weekday_number];
             document.getElementById('previewBox').classList.remove('hidden');
         }
 
-        // اعتبارسنجی فرم
         document.getElementById('smsForm').addEventListener('submit', function(e) {
             const message = this.message.value.trim();
             const charCount = message.length;
@@ -582,7 +565,6 @@ $today_persian = $weekdays_persian[$weekday_number];
                 return;
             }
 
-            // نمایش لودینگ
             const submitBtn = this.querySelector('button[type="submit"]');
             submitBtn.innerHTML = `
         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -593,7 +575,6 @@ $today_persian = $weekdays_persian[$weekday_number];
     `;
             submitBtn.disabled = true;
 
-            // تأیید نهایی
             if (!confirm(`آیا از ارسال پیامک به ${totalRecipients} نفر اطمینان دارید؟`)) {
                 e.preventDefault();
                 submitBtn.innerHTML = `
@@ -606,7 +587,6 @@ $today_persian = $weekdays_persian[$weekday_number];
             }
         });
 
-        // آپدیت اولیه شمارش
         document.addEventListener('DOMContentLoaded', function() {
             const textarea = document.querySelector('textarea[name="message"]');
             updateCharCount(textarea);

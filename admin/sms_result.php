@@ -1,21 +1,17 @@
 <?php
-// sms_result.php - نسخه تصحیح شده
 session_start();
 
-// فعال کردن خطاها
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require_once '../config.php';
 
-// چک ورود مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
 }
 
-// دریافت نتایج از session
 if (!isset($_SESSION['sms_result'])) {
     header("Location: send_sms.php");
     exit;
@@ -28,7 +24,6 @@ $first_name = $_SESSION['first_name'] ?? 'مدیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// تاریخ شمسی
 $today = date('Y-m-d');
 function gregorian_to_jalali($gy, $gm, $gd)
 {
@@ -57,8 +52,6 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// ادامه کد HTML شما...
-// (کد HTML که قبلاً داشتید اینجا قرار می‌گیرد)
 ?>
 <!doctype html>
 <html lang="fa" dir="rtl">
@@ -376,7 +369,6 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
             overlay.classList.toggle('hidden');
         }
 
-        // هدایت خودکار به داشبورد بعد از 30 ثانیه
         setTimeout(function() {
             window.location.href = 'dashboard.php';
         }, 30000);
