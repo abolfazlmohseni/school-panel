@@ -5,7 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once '../config.php';
 
-// چک ورود دبیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -13,7 +12,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
 
 $teacher_id = $_SESSION['user_id'];
 
-// دریافت ID حضور و غیاب
 if (!isset($_GET['id'])) {
     header("Location: attendance_history.php?error=شناسه مشخص نشده");
     exit;
@@ -21,7 +19,6 @@ if (!isset($_GET['id'])) {
 
 $attendance_id = intval($_GET['id']);
 
-// حذف رکورد
 $stmt = $conn->prepare("DELETE FROM attendance WHERE id = ? AND teacher_id = ?");
 $stmt->bind_param("ii", $attendance_id, $teacher_id);
 

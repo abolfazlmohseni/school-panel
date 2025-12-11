@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود دبیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -13,8 +12,6 @@ $first_name = $_SESSION['first_name'] ?? 'دبیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// ---------- آمار کلی ----------
-// تعداد کلاس‌ها
 $stmt = $conn->prepare("
     SELECT COUNT(DISTINCT c.id) as total_classes
     FROM programs p
@@ -27,7 +24,6 @@ $result = $stmt->get_result();
 $stats = $result->fetch_assoc();
 $stmt->close();
 
-// تعداد دانش‌آموزان
 $stmt = $conn->prepare("
     SELECT COUNT(DISTINCT s.id) as total_students
     FROM programs p
@@ -41,7 +37,6 @@ $result = $stmt->get_result();
 $stats['total_students'] = $result->fetch_assoc()['total_students'];
 $stmt->close();
 
-// آمار حضور و غیاب
 $stmt = $conn->prepare("
     SELECT 
         COUNT(*) as total_attendance,
@@ -56,13 +51,11 @@ $result = $stmt->get_result();
 $attendance_stats = $result->fetch_assoc();
 $stmt->close();
 
-// درصد حضور
 $attendance_rate = $attendance_stats['total_attendance'] > 0
     ? round(($attendance_stats['total_present'] / $attendance_stats['total_attendance']) * 100, 1)
     : 0;
 
 
-// ---------- آمار کلاس‌ها ----------
 $stmt = $conn->prepare("
     SELECT 
         c.id,
@@ -425,8 +418,8 @@ $stmt->close();
                         <?php echo $attendance_stats['total_absent'] ?? 0; ?>
                     ],
                     backgroundColor: [
-                        '#10b981', // سبز برای حاضر
-                        '#ef4444' // قرمز برای غایب
+                        '#10b981', 
+                        '#ef4444' 
                     ],
                     borderWidth: 0,
                     hoverOffset: 10

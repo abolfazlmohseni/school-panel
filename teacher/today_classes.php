@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود دبیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -13,7 +12,6 @@ $first_name = $_SESSION['first_name'] ?? 'دبیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// آرایه روزهای هفته فارسی
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -24,7 +22,6 @@ $weekdays_persian = [
     6 => 'شنبه'
 ];
 
-// تاریخ امروز به شمسی
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -53,11 +50,9 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// نام روز امروز
 $weekday_number = date('w');
 $today_persian = $weekdays_persian[$weekday_number];
 
-// ---------- دریافت کلاس‌های امروز ----------
 $stmt = $conn->prepare("
     SELECT 
         p.id as program_id,
@@ -96,11 +91,9 @@ $result = $stmt->get_result();
 $today_classes = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// ---------- بررسی آیا امروز تعطیل است ----------
 $is_holiday = count($today_classes) === 0;
 $next_class = null;
 
-// اگر امروز کلاسی نیست، اولین کلاس بعدی را پیدا کن
 if ($is_holiday) {
     $stmt = $conn->prepare("
         SELECT 
@@ -133,7 +126,6 @@ if ($is_holiday) {
     $stmt->close();
 }
 
-// ---------- آمار امروز ----------
 $total_students_today = 0;
 $total_present_today = 0;
 
@@ -517,10 +509,9 @@ $attendance_rate_today = $total_students_today > 0
             overlay.classList.toggle('hidden');
         }
 
-        // رفرش خودکار صفحه هر 5 دقیقه
         setTimeout(function() {
             location.reload();
-        }, 5 * 60 * 1000); // 5 دقیقه
+        }, 5 * 60 * 1000); 
     </script>
 </body>
 

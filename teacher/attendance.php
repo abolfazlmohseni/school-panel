@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود دبیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -13,7 +12,6 @@ $first_name = $_SESSION['first_name'] ?? 'دبیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// دریافت program_id از URL
 if (!isset($_GET['program_id'])) {
     die("برنامه کلاس مشخص نشده است.");
 }
@@ -21,7 +19,6 @@ if (!isset($_GET['program_id'])) {
 $program_id = intval($_GET['program_id']);
 $today = date('Y-m-d');
 
-// تبدیل تاریخ میلادی به شمسی
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -45,12 +42,10 @@ function gregorian_to_jalali($gy, $gm, $gd)
     return array($jy, $jm, $jd);
 }
 
-// تاریخ امروز به شمسی
 $today_gregorian = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_gregorian[0], $today_gregorian[1], $today_gregorian[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// آرایه روزهای هفته فارسی
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -64,7 +59,6 @@ $weekdays_persian = [
 $weekday_number = date('w');
 $today_persian = $weekdays_persian[$weekday_number];
 
-// ---------- دریافت اطلاعات کلاس ----------
 $stmt = $conn->prepare("
     SELECT 
         p.id as program_id,
@@ -87,7 +81,6 @@ if ($result->num_rows === 0) {
 $class_info = $result->fetch_assoc();
 $stmt->close();
 
-// ---------- دریافت دانش‌آموزان این کلاس ----------
 $stmt = $conn->prepare("
     SELECT 
         s.id,
@@ -108,13 +101,10 @@ $result = $stmt->get_result();
 $students = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// ---------- پردازش فرم ثبت حضور و غیاب ----------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_attendance'])) {
-    // شروع تراکنش
     $conn->begin_transaction();
 
     try {
-        // حذف حضور و غیاب قبلی برای این جلسه (اگر وجود دارد)
         $delete_stmt = $conn->prepare("
             DELETE FROM attendance 
             WHERE program_id = ? AND attendance_date = ?
@@ -123,7 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_attendance']))
         $delete_stmt->execute();
         $delete_stmt->close();
 
-        // ثبت حضور و غیاب جدید
         $insert_stmt = $conn->prepare("
             INSERT INTO attendance 
             (student_id, program_id, teacher_id, attendance_date, status) 
@@ -145,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_attendance']))
         $insert_stmt->close();
         $conn->commit();
 
-        // رفرش صفحه برای نمایش تغییرات
         header("Location: attendance.php?program_id=" . $program_id . "&success=1");
         exit;
     } catch (Exception $e) {
@@ -154,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_attendance']))
     }
 }
 
-// آمار
 $present_count = 0;
 $absent_count = 0;
 
@@ -426,7 +413,6 @@ foreach ($students as $student) {
                     <?php endif; ?>
                 </div>
 
-                <!-- دکمه‌های اقدام -->
                 <div class="p-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row justify-between gap-3">
                     <button type="button" onclick="selectAll('حاضر')" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">
                         انتخاب همه به عنوان حاضر
@@ -436,7 +422,7 @@ foreach ($students as $student) {
                             انتخاب همه به عنوان غایب
                         </button>
                         <button type="submit" name="submit_attendance" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-                            💾 ذخیره حضور و غیاب
+                            ذخیره حضور و غیاب
                         </button>
                     </div>
                 </div>
@@ -481,7 +467,6 @@ foreach ($students as $student) {
             overlay.classList.toggle('hidden');
         }
 
-        // تابع برای انتخاب همه
         function selectAll(status) {
             const radios = document.querySelectorAll(`input[type="radio"][value="${status}"]`);
             radios.forEach(radio => {
@@ -491,11 +476,9 @@ foreach ($students as $student) {
             updateStats();
         }
 
-        // تابع به‌روزرسانی استایل ردیف
         function updateRowStyle(radio) {
             const studentId = radio.getAttribute('data-student-id');
 
-            // حذف کلاس‌های فعال از همه برچسب‌های این دانش‌آموز
             document.querySelectorAll(`input[data-student-id="${studentId}"] + label`).forEach(label => {
                 label.classList.remove('bg-green-500', 'text-white', 'bg-red-500', 'text-white');
 
@@ -506,7 +489,6 @@ foreach ($students as $student) {
                 }
             });
 
-            // اضافه کردن کلاس به برچسب انتخاب شده
             const label = document.querySelector(`label[for="${radio.id}"]`);
             if (radio.value === 'حاضر') {
                 label.classList.add('bg-green-500', 'text-white');
@@ -516,7 +498,6 @@ foreach ($students as $student) {
                 label.classList.remove('bg-white', 'text-red-600');
             }
 
-            // تغییر کلاس ردیف
             const row = radio.closest('.p-4');
             if (radio.value === 'حاضر') {
                 row.classList.add('present');
@@ -529,7 +510,6 @@ foreach ($students as $student) {
             updateStats();
         }
 
-        // تابع به‌روزرسانی آمار
         function updateStats() {
             const presentCount = document.querySelectorAll('input[type="radio"][value="حاضر"]:checked').length;
             const absentCount = document.querySelectorAll('input[type="radio"][value="غایب"]:checked').length;
@@ -538,42 +518,34 @@ foreach ($students as $student) {
             document.getElementById('absent-count').textContent = absentCount;
         }
 
-        // فعال کردن رویداد change برای همه رادیوها
         document.querySelectorAll('.attendance-radio').forEach(radio => {
             radio.addEventListener('change', function() {
                 updateRowStyle(this);
             });
         });
 
-        // تابع مدیریت ارسال فرم
         function handleSubmit(event) {
             event.preventDefault();
 
-            // نمایش پیام موفقیت
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
                 successMessage.classList.remove('hidden');
 
-                // مخفی کردن پیام بعد از 3 ثانیه
                 setTimeout(() => {
                     successMessage.classList.add('hidden');
                 }, 3000);
             }
 
-            // اسکرول به بالای صفحه
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
 
-            // ارسال فرم
             event.target.submit();
         }
 
-        // به‌روزرسانی اولیه آمار
         updateStats();
 
-        // رفرش خودکار صفحه هر 5 دقیقه
         setTimeout(function() {
             location.reload();
         }, 5 * 60 * 1000);

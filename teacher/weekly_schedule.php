@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود دبیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -13,7 +12,6 @@ $first_name = $_SESSION['first_name'] ?? 'دبیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// تاریخ امروز به شمسی
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -42,7 +40,6 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// آرایه روزهای هفته فارسی
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -56,7 +53,6 @@ $weekdays_persian = [
 $weekday_number = date('w');
 $today_persian = $weekdays_persian[$weekday_number];
 
-// دریافت برنامه هفتگی
 $stmt = $conn->prepare("
     SELECT 
         p.id as program_id,
@@ -87,7 +83,6 @@ $result = $stmt->get_result();
 $schedule = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// گروه‌بندی بر اساس روز
 $grouped_schedule = [];
 foreach ($schedule as $item) {
     $day = $item['day_of_week'];
@@ -97,7 +92,6 @@ foreach ($schedule as $item) {
     $grouped_schedule[$day][] = $item;
 }
 
-// آمار کلاس‌ها
 $total_classes = count($schedule);
 $total_days = count($grouped_schedule);
 $max_classes_per_day = 0;
@@ -105,7 +99,6 @@ foreach ($grouped_schedule as $day_classes) {
     $max_classes_per_day = max($max_classes_per_day, count($day_classes));
 }
 
-// ترتیب روزهای هفته فارسی
 $days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
 ?>
 
@@ -359,11 +352,9 @@ $days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', '�
                                         </div>
                                     </div>
 
-                                    <!-- لیست کلاس‌های این روز -->
                                     <div class="divide-y divide-gray-100">
                                         <?php if (count($day_classes) > 0): ?>
                                             <?php foreach ($day_classes as $class):
-                                                // تعداد دانش‌آموزان این کلاس
                                                 $stmt = $conn->prepare("SELECT COUNT(*) as student_count FROM students WHERE class_id = ?");
                                                 $stmt->bind_param("i", $class['class_id']);
                                                 $stmt->execute();
@@ -489,7 +480,7 @@ $days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', '�
                     <div class="text-center">
                         <button onclick="window.print()"
                             class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-                            🖨️ چاپ برنامه هفتگی
+                            چاپ برنامه هفتگی
                         </button>
                     </div>
                 <?php endif; ?>
@@ -506,7 +497,6 @@ $days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', '�
             overlay.classList.toggle('hidden');
         }
 
-        // استایل برای چاپ
         const printStyle = document.createElement('style');
         printStyle.textContent = `
             @media print {

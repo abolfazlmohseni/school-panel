@@ -2,24 +2,20 @@
 session_start();
 require_once '../config.php';
 
-// ---------- فعال کردن نمایش خطاها ----------
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// ---------- چک ورود دبیر ----------
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: login.php");
     exit;
 }
 
-// استفاده مستقیم از نام ذخیره شده در سشن
 $first_name = $_SESSION['first_name'] ?? 'دبیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 $teacher_id = $_SESSION['user_id'];
 
-// ---------- آرایه تبدیل روزهای هفته ----------
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -30,7 +26,6 @@ $weekdays_persian = [
     6 => 'شنبه'
 ];
 
-// تاریخ امروز به شمسی
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -59,7 +54,6 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// ---------- گرفتن برنامه‌های کامل دبیر ----------
 $stmt = $conn->prepare("
     SELECT 
         p.id as program_id, 
@@ -89,14 +83,12 @@ $result = $stmt->get_result();
 $programs = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// ---------- فیلتر برنامه‌های امروز ----------
 $weekday_number = date('w'); // 0=یکشنبه, 1=دوشنبه, ...
 $today_persian = $weekdays_persian[$weekday_number];
 $today_classes = array_filter($programs, function ($p) use ($today_persian) {
     return $p['day_of_week'] === $today_persian;
 });
 
-// ---------- گروه‌بندی برنامه‌ها بر اساس روز ----------
 $grouped_by_day = [];
 foreach ($programs as $program) {
     $day = $program['day_of_week'];
@@ -106,12 +98,10 @@ foreach ($programs as $program) {
     $grouped_by_day[$day][] = $program;
 }
 
-// ---------- آمار امروز ----------
 $total_students_today = 0;
 $total_present_today = 0;
 
 foreach ($today_classes as $class) {
-    // تعداد دانش‌آموزان هر کلاس
     $stmt = $conn->prepare("SELECT COUNT(*) as student_count FROM students WHERE class_id = ?");
     $stmt->bind_param("i", $class['class_id']);
     $stmt->execute();
@@ -121,7 +111,6 @@ foreach ($today_classes as $class) {
 
     $total_students_today += $class_stats['student_count'];
 
-    // تعداد حاضرین امروز
     $stmt = $conn->prepare("
         SELECT COUNT(DISTINCT a.student_id) as present_count
         FROM attendance a
@@ -142,7 +131,6 @@ $attendance_rate_today = $total_students_today > 0
     ? round(($total_present_today / $total_students_today) * 100, 0)
     : 0;
 
-// ترتیب روزهای هفته فارسی
 $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
 ?>
 
@@ -374,7 +362,6 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <?php if (count($today_classes) > 0): ?>
                         <div class="space-y-3">
                             <?php foreach ($today_classes as $class):
-                                // تعداد دانش‌آموزان این کلاس
                                 $stmt = $conn->prepare("SELECT COUNT(*) as student_count FROM students WHERE class_id = ?");
                                 $stmt->bind_param("i", $class['class_id']);
                                 $stmt->execute();
@@ -382,7 +369,6 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                                 $class_stats = $result->fetch_assoc();
                                 $stmt->close();
 
-                                // تعداد حاضرین این کلاس امروز
                                 $stmt = $conn->prepare("
                                     SELECT COUNT(DISTINCT a.student_id) as present_count
                                     FROM attendance a
@@ -494,7 +480,6 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     </div>
                 </div>
 
-                <!-- بخش کل برنامه هفتگی (خلاصه) -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <h2 class="text-xl font-semibold text-gray-700 mb-4">برنامه هفتگی شما</h2>
 
@@ -566,7 +551,6 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
             overlay.classList.toggle('hidden');
         }
 
-        // رفرش خودکار صفحه هر 3 دقیقه برای آمار به روز
         setTimeout(function() {
             location.reload();
         }, 3 * 60 * 1000);
