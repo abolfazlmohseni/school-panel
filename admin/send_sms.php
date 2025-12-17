@@ -36,8 +36,8 @@ $stmt->close();
 
 $total_recipients = count($recipients);
 
-$default_message = "والد محترم
-دانش‌آموز {name} کلاس {class} امروز {date} غایب بود.
+$default_message = "والدین محترم
+دانش‌آموز {name} کلاس {class} امروز {date} غایب است.
 هنرستان سپهری راد";
 
 function gregorian_to_jalali($gy, $gm, $gd)
