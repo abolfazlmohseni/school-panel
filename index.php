@@ -1,2 +1,2 @@
 <?php
-header("Location: /attendance-system/login.php");
+header("Location: /login.php");

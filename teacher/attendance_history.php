@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
@@ -120,7 +120,7 @@ function gregorian_to_jalali($gy, $gm, $gd)
 
 <head>
     <meta charset="utf-8">
-    <title>تاریخچه حضور و غیاب - سامانه حضور غیاب</title>
+    <title>تاریخچه حضور و غیاب</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>

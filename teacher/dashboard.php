@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -139,7 +139,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
 
 <head>
     <meta charset="utf-8">
-    <title>داشبورد دبیر - سامانه حضور غیاب</title>
+    <title>داشبورد دبیر</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>

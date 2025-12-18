@@ -1,8 +1,9 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 require '../vendor/autoload.php';
+
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
 
         for ($i = 1; $i < count($rows); $i++) {
             $row = $rows[$i];
-            $row_number = $i + 1; 
+            $row_number = $i + 1;
 
             $all_empty = true;
             foreach ($row as $cell) {

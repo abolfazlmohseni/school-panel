@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
@@ -84,7 +84,7 @@ $stmt->close();
 
 <head>
     <meta charset="utf-8">
-    <title>گزارش‌ها و آمار - سامانه حضور غیاب</title>
+    <title>گزارش‌ها و آمار</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

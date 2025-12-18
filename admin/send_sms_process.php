@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 error_log("send_sms_process.php شروع شد - POST: " . print_r($_POST, true));
-require_once '../config.php';
+require_once '../../user/config.php';
 
 // تنظیمات SMS.ir
 $smsir_api_key = "rtAYYqugrjYU9Ut3d4HCGVBq7YRTWTjxGTB72TMEd3UOEtYk"; // کلید API شما
