@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header('Location: ../login.php');
@@ -27,6 +27,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 <html lang="fa" dir="rtl">
 
 <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta charset="utf-8">
     <title>ویرایش برنامه</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -58,7 +59,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 </head>
 
 <body class="min-h-full bg-gray-100">
-     <!-- Mobile Menu Button -->
+    <!-- Mobile Menu Button -->
     <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -142,7 +143,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

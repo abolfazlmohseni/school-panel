@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
@@ -168,7 +168,7 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
 
 <head>
     <meta charset="utf-8">
-    <title>داشبورد - سامانه حضور غیاب هنرستان سپهری راد</title>
+    <title>داشبورد</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -306,7 +306,7 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -343,9 +343,7 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                     </path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
-                                +<?php echo $total_students > 0 ? round($total_students / 10) : 0; ?>%
-                            </div>
+
                         </div>
                         <h3 class="text-3xl font-bold mb-1"><?php echo $total_students; ?></h3>
                         <p class="text-blue-100 text-sm">تعداد دانش‌آموزان</p>
@@ -374,9 +372,6 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 </svg>
-                            </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
-                                <?php echo count($active_teachers); ?> فعال
                             </div>
                         </div>
                         <h3 class="text-3xl font-bold mb-1"><?php echo $total_teachers; ?></h3>
@@ -438,9 +433,7 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                     <?php endforeach; ?>
                                 </div>
                                 <div class="mt-4 text-center">
-                                    <a href="programs.php?day=<?php echo urlencode($today_persian); ?>" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                        مشاهده همه کلاس‌های امروز →
-                                    </a>
+
                                 </div>
                             <?php else: ?>
                                 <div class="text-center py-8 text-gray-500">
@@ -493,9 +486,6 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                     <?php endforeach; ?>
                                 </div>
                                 <div class="mt-4 text-center">
-                                    <a href="attendance_report.php" class="text-green-600 hover:text-green-800 text-sm font-medium">
-                                        مشاهده گزارش کامل حضور و غیاب →
-                                    </a>
                                 </div>
                             <?php else: ?>
                                 <div class="text-center py-8 text-gray-500">

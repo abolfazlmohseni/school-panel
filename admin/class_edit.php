@@ -7,25 +7,32 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
-if (!isset($_GET['id'])) {
-    header('Location: students.php');
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($id <= 0) {
+    header('Location: classes.php');
     exit;
 }
 
-$id = intval($_GET['id']);
-$result = $conn->query("SELECT * FROM students WHERE id = $id");
-$student = $result->fetch_assoc();
+// دریافت اطلاعات کلاس
+$stmt = $conn->prepare("SELECT id, name FROM classes WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$class = $result->fetch_assoc();
 
-$classes_result = $conn->query("SELECT id, name FROM classes");
-
+if (!$class) {
+    header('Location: classes.php');
+    exit;
+}
 ?>
+
 <!doctype html>
 <html lang="fa" dir="rtl">
 
 <head>
     <meta charset="utf-8">
-    <title>ویرایش دانش‌آموز</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ویرایش کلاس</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -72,7 +79,6 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-1">هنرستان سپهری راد</h1>
                 <p class="text-blue-100 text-sm">سامانه حضور و غیاب</p>
-
             </div>
 
             <!-- Navigation Menu -->
@@ -95,7 +101,7 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
                         </a>
                     </li>
                     <li>
-                        <a href="classes.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="classes.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
@@ -103,7 +109,7 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
                         </a>
                     </li>
                     <li>
-                        <a href="students.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
+                        <a href="students.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                             </svg>
@@ -134,7 +140,6 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
                             ارسال پیامک
                         </a>
                     </li>
-
                 </ul>
             </nav>
 
@@ -158,65 +163,41 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
             <div class="max-w-2xl mx-auto">
                 <!-- Header -->
                 <div class="mb-6">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ویرایش دانش‌آموز</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ویرایش کلاس</h1>
                     <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
                 </div>
                 <!-- Main Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6 sm:p-8">
-                        <form action="student_edit_action.php" method="POST" class="space-y-6">
-                            <input type="hidden" name="id" value="<?= $student['id'] ?>">
-                            <!-- First Name -->
-                            <div>
-                                <label for="first_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">نام
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($student['first_name']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام را وارد کنید">
-                            </div>
-                            <!-- Last Name -->
-                            <div>
-                                <label for="last_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">نام خانوادگی
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($student['last_name']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام خانوادگی را وارد کنید">
-                            </div>
-                            <!-- National Code -->
-                            <div>
-                                <label for="national_code" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">کد ملی
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="national_code" name="national_code" value="<?= htmlspecialchars($student['national_code']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="کد ملی را وارد کنید">
-                            </div>
-                            <!-- Phone -->
-                            <div>
-                                <label for="phone" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">شماره تماس</label>
-                                <input type="text" id="phone" name="phone" value="<?= htmlspecialchars($student['phone']) ?>" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="شماره تماس را وارد کنید">
-                            </div>
-                            <!-- Class Selection -->
-                            <div>
-                                <label for="class_id" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
-                                    کلاس <span class="text-red-500">*</span>
-                                </label>
+                        <form action="class_edit_action.php" method="post" class="space-y-6">
+                            <input type="hidden" name="id" value="<?= $class['id'] ?>">
 
-                                <select id="class_id" name="class_id" required
+                            <!-- Class Name -->
+                            <div>
+                                <label for="class_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام کلاس
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="class_name" name="class_name" required
+                                    value="<?= htmlspecialchars($class['name']) ?>"
+                                    placeholder="مثال: کلاس دهم علوم تجربی"
                                     class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base">
-
-                                    <?php while ($class = $classes_result->fetch_assoc()): ?>
-                                        <option value="<?= $class['id'] ?>"
-                                            <?= ($class['id'] == $student['class_id']) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($class['name']) ?>
-                                        </option>
-                                    <?php endwhile; ?>
-
-                                </select>
                             </div>
+
                             <!-- Action Buttons -->
                             <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base">بروزرسانی دانش‌آموز</button>
-                                <a href="students.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base">بازگشت به لیست</a>
+                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base">
+                                    بروزرسانی کلاس
+                                </button>
+                                <a href="classes.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base">
+                                    بازگشت به لیست
+                                </a>
                             </div>
                         </form>
                     </div>
+                </div>
+                <!-- Info Box -->
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="text-blue-800 text-xs sm:text-sm">💡 پس از ویرایش، تغییرات بلافاصله اعمال خواهد شد.</p>
                 </div>
             </div>
         </div>
@@ -230,5 +211,6 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
             overlay.classList.toggle('hidden');
         }
     </script>
+</body>
 
 </html>

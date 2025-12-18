@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
@@ -107,7 +107,7 @@ $days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', '�
 
 <head>
     <meta charset="utf-8">
-    <title>برنامه هفتگی - سامانه حضور غیاب</title>
+    <title>برنامه هفتگی</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>

@@ -1,12 +1,12 @@
 <?php
 // tools/create_admin.php
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '../../../user/config.php';
 
 // تنظیمات: نام کاربری و پسوردی که میخوای بذاری
-$username = 'admin';
-$password_plain = '1234';
-$first = 'مدیر';
-$last = 'سیستم';
+$username = 'SepehriRad';
+$password_plain = '12135811228aM#@';
+$first = 'مدیریت';
+$last = 'مدرسه';
 
 // هش امن
 $hash = password_hash($password_plain, PASSWORD_DEFAULT);

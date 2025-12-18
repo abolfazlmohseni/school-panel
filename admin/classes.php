@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header('Location: ../login.php');
@@ -137,7 +137,7 @@ $result = $conn->query($sql);
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -166,6 +166,24 @@ $result = $conn->query($sql);
                             <h2 class="text-lg sm:text-xl font-semibold text-gray-900">مدیریت کلاس‌ها</h2>
                             <a href="class_add.php" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center text-sm sm:text-base"> افزودن کلاس جدید </a>
                         </div>
+                        <?php if (isset($_GET['success'])): ?>
+                            <div class="mb-4 p-3 rounded-lg bg-green-100 border border-green-400 text-green-700">
+                                <?php
+                                $msg = [
+                                    1 => 'کلاس با موفقیت اضافه شد.',
+                                    2 => 'کلاس با موفقیت ویرایش شد.',
+                                    3 => 'کلاس با موفقیت حذف شد.'
+                                ];
+                                echo $msg[$_GET['success']] ?? 'عملیات موفقیت‌آمیز بود.';
+                                ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (isset($_GET['error']) && $_GET['error'] == 1): ?>
+                            <div class="mb-4 p-3 rounded-lg bg-red-100 border border-red-400 text-red-700">
+                                 امکان حذف کلاس وجود ندارد. ابتدا دانش‌آموزان این کلاس را حذف کنید.
+                            </div>
+                        <?php endif; ?>
                         <!-- Search Form -->
                         <form method="GET" class="mb-6 flex flex-col sm:flex-row gap-3">
                             <input type="text" name="search" placeholder="جستجو بر اساس نام کلاس ..." value="<?= htmlspecialchars($search) ?>" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm sm:text-base">

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
@@ -85,7 +85,7 @@ $today_persian = $weekdays_persian[$weekday_number];
 
 <head>
     <meta charset="utf-8">
-    <title>ارسال پیامک - سامانه حضور غیاب هنرستان سپهری راد</title>
+    <title>ارسال پیامک</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -221,7 +221,7 @@ $today_persian = $weekdays_persian[$weekday_number];
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -266,7 +266,7 @@ $today_persian = $weekdays_persian[$weekday_number];
                     </div>
 
                     <!-- Message Length Card -->
-                    <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
+                    <!-- <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-white bg-opacity-20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
@@ -279,7 +279,7 @@ $today_persian = $weekdays_persian[$weekday_number];
                         </div>
                         <h3 class="text-3xl font-bold mb-1">160</h3>
                         <p class="text-blue-100 text-sm">کاراکتر مجاز</p>
-                    </div>
+                    </div> -->
 
                     <!-- Date Card -->
                     <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md p-6 text-white">
@@ -458,7 +458,7 @@ $today_persian = $weekdays_persian[$weekday_number];
                         </div>
                         <h3 class="text-xl font-bold text-gray-700 mb-3">هیچ غایبی وجود ندارد!</h3>
                         <p class="text-gray-600 mb-6">امروز هیچ دانش‌آموزی غایب نبوده است.</p>
-                        <div class="space-x-4">
+                        <div class="space-x-4 space-y-4">
                             <a href="today_absent.php"
                                 class="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                 مشاهده غایبین
