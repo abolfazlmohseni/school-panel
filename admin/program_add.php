@@ -17,6 +17,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>افزودن برنامه جدید</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>

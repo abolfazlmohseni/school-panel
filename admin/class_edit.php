@@ -7,29 +7,32 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
-if (!isset($_GET['id'])) {
-    header('Location: programs.php');
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($id <= 0) {
+    header('Location: classes.php');
     exit;
 }
 
-$id = intval($_GET['id']);
+// دریافت اطلاعات کلاس
+$stmt = $conn->prepare("SELECT id, name FROM classes WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$class = $result->fetch_assoc();
 
-// گرفتن اطلاعات برنامه
-$result = $conn->query("SELECT * FROM programs WHERE id=$id");
-$program = $result->fetch_assoc();
-
-// گرفتن لیست کلاس‌ها و دبیرها برای سلکت‌باکس
-$classes_result = $conn->query("SELECT id, name FROM classes");
-$teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHERE role='teacher'");
+if (!$class) {
+    header('Location: classes.php');
+    exit;
+}
 ?>
 
 <!doctype html>
 <html lang="fa" dir="rtl">
 
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta charset="utf-8">
-    <title>ویرایش برنامه</title>
+    <title>ویرایش کلاس</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -98,7 +101,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                         </a>
                     </li>
                     <li>
-                        <a href="classes.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="classes.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
@@ -114,7 +117,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                         </a>
                     </li>
                     <li>
-                        <a href="programs.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
+                        <a href="programs.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
@@ -137,7 +140,6 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                             ارسال پیامک
                         </a>
                     </li>
-
                 </ul>
             </nav>
 
@@ -159,120 +161,47 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
     <div class="min-h-screen lg:mr-64">
         <div class="w-full min-h-screen py-8 px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl mx-auto">
-
                 <!-- Header -->
                 <div class="mb-6">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ویرایش برنامه</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ویرایش کلاس</h1>
                     <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
                 </div>
-
                 <!-- Main Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6 sm:p-8">
+                        <form action="class_edit_action.php" method="post" class="space-y-6">
+                            <input type="hidden" name="id" value="<?= $class['id'] ?>">
 
-                        <form action="program_update.php" method="POST" class="space-y-6">
-
-                            <input type="hidden" name="id" value="<?= $program['id'] ?>">
-
-                            <!-- Class Selection -->
+                            <!-- Class Name -->
                             <div>
-                                <label for="class_id" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
-                                    انتخاب کلاس <span class="text-red-500">*</span>
+                                <label for="class_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام کلاس
+                                    <span class="text-red-500">*</span>
                                 </label>
-
-                                <select id="class_id" name="class_id" required
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
-
-                                    <?php while ($class = $classes_result->fetch_assoc()): ?>
-                                        <option value="<?= $class['id'] ?>"
-                                            <?= $class['id'] == $program['class_id'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($class['name']) ?>
-                                        </option>
-                                    <?php endwhile; ?>
-
-                                </select>
+                                <input type="text" id="class_name" name="class_name" required
+                                    value="<?= htmlspecialchars($class['name']) ?>"
+                                    placeholder="مثال: کلاس دهم علوم تجربی"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base">
                             </div>
 
-                            <!-- Teacher Selection -->
-                            <div>
-                                <label for="teacher_id" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
-                                    انتخاب دبیر <span class="text-red-500">*</span>
-                                </label>
-
-                                <select id="teacher_id" name="teacher_id" required
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
-
-                                    <?php while ($teacher = $teachers_result->fetch_assoc()): ?>
-                                        <option value="<?= $teacher['id'] ?>"
-                                            <?= $teacher['id'] == $program['teacher_id'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($teacher['first_name'] . ' ' . $teacher['last_name']) ?>
-                                        </option>
-                                    <?php endwhile; ?>
-
-                                </select>
-                            </div>
-
-                            <!-- Day of Week -->
-                            <div>
-                                <label for="day_of_week" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
-                                    روز هفته <span class="text-red-500">*</span>
-                                </label>
-
-                                <select id="day_of_week" name="day_of_week" required
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
-
-                                    <?php
-                                    $days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
-                                    foreach ($days as $day):
-                                    ?>
-                                        <option value="<?= $day ?>"
-                                            <?= $program['day_of_week'] == $day ? 'selected' : '' ?>>
-                                            <?= $day ?>
-                                        </option>
-                                    <?php endforeach; ?>
-
-                                </select>
-                            </div>
-
-                            <!-- Schedule -->
-                            <div>
-                                <label for="schedule" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
-                                    زنگ کلاس <span class="text-red-500">*</span>
-                                </label>
-
-                                <select id="schedule" name="schedule" required
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
-                                    <option value="1" <?= $program['schedule'] == '1' ? 'selected' : '' ?>>زنگ اول</option>
-                                    <option value="2" <?= $program['schedule'] == '2' ? 'selected' : '' ?>>زنگ دوم</option>
-                                    <option value="3" <?= $program['schedule'] == '3' ? 'selected' : '' ?>>زنگ سوم</option>
-                                    <option value="4" <?= $program['schedule'] == '4' ? 'selected' : '' ?>>زنگ چهارم</option>
-                                </select>
-                            </div>
-
-                            <!-- Buttons -->
+                            <!-- Action Buttons -->
                             <div class="flex flex-col sm:flex-row gap-3 pt-4">
-
-                                <button type="submit"
-                                    class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700">
-                                    بروزرسانی برنامه
+                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base">
+                                    بروزرسانی کلاس
                                 </button>
-
-                                <a href="programs.php"
-                                    class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-center">
+                                <a href="classes.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base">
                                     بازگشت به لیست
                                 </a>
-
                             </div>
-
                         </form>
-
                     </div>
                 </div>
-
+                <!-- Info Box -->
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="text-blue-800 text-xs sm:text-sm">💡 پس از ویرایش، تغییرات بلافاصله اعمال خواهد شد.</p>
+                </div>
             </div>
         </div>
     </div>
-
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
