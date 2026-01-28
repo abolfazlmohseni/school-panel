@@ -1,0 +1,13 @@
+# backend/.htaccess
+RewriteEngine On
+
+# اگر فایل یا پوشه واقعی وجود داشت، همان را سرو کن
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# مسیریابی API
+RewriteRule ^api/auth/login$ api/auth/login.php [L]
+RewriteRule ^api/auth/logout$ api/auth/logout.php [L]
+
+# برای سایر APIها بعداً اضافه می‌شود
+# RewriteRule ^api/(.*)$ api/$1.php [L]
