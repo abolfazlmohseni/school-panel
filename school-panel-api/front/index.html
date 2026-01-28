@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هنرستان سپهری راد</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+    <script>
+        // بررسی اگر کاربر لاگین کرده، به داشبورد منتقل شود
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('auth_token');
+            const user = localStorage.getItem('user');
+
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    if (userData.role === 'admin') {
+                        window.location.href = 'admin/dashboard.html';
+                    } else {
+                        window.location.href = 'teacher/dashboard.html';
+                    }
+                } catch (e) {
+                    window.location.href = 'login.html';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+
+</html>
