@@ -3,7 +3,7 @@
 
 require_once __DIR__ . '/../middleware/CorsMiddleware.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
-// بعداً کنترلرهای دیگر اینجا require می‌شوند
+require_once __DIR__ . '/../controllers/DashboardController.php';
 
 class ApiRouter {
     private $routes = [];
@@ -20,16 +20,27 @@ class ApiRouter {
                 '/api/auth/logout' => ['AuthController', 'logout']
             ],
             'GET' => [
+                // احراز هویت
                 '/api/auth/check' => ['AuthController', 'check'],
                 '/api/auth/profile' => ['AuthController', 'getProfile'],
+                
+                // داشبورد
+                '/api/dashboard/stats' => ['DashboardController', 'getStats'],
+                '/api/dashboard/today-classes' => ['DashboardController', 'getTodayClasses'],
+                '/api/dashboard/recent-attendance' => ['DashboardController', 'getRecentAttendance'],
+                '/api/dashboard/active-teachers' => ['DashboardController', 'getActiveTeachers'],
+                '/api/dashboard/jalali-date' => ['DashboardController', 'getJalaliDate'],
+                '/api/dashboard/all' => ['DashboardController', 'getAllData'],
+                
+                // تست API
                 '/api/test' => function() {
                     return ['success' => true, 'message' => 'API is working'];
                 }
             ]
-            // بعداً routeهای دیگر اضافه می‌شوند
         ];
     }
     
+    // بقیه کدها همان...
     public function handleRequest() {
         $method = $_SERVER['REQUEST_METHOD'];
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
