@@ -31,7 +31,7 @@ $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM
     <meta charset="utf-8">
     <title>لیست دبیران</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;

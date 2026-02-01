@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>هنرستان سپهری راد</title>
+    <link rel="stylesheet" href="./styles/output.css">
     <style>
         .auth-container {
             animation: slideUp 0.6s ease-out;
@@ -39,6 +39,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/styles/style.css">
 </head>
 
 <body dir="rtl">

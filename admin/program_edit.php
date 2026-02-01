@@ -27,10 +27,10 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 <html lang="fa" dir="rtl">
 
 <head>
+    <meta charset="utf-8">    
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta charset="utf-8">
     <title>ویرایش برنامه</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -59,7 +59,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 </head>
 
 <body class="min-h-full bg-gray-100">
-    <!-- Mobile Menu Button -->
+     <!-- Mobile Menu Button -->
     <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>

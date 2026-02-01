@@ -40,7 +40,7 @@ $result = $conn->query($sql);
     <meta charset="utf-8">
     <title>مدیریت دانش‌آموزان</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;

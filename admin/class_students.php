@@ -44,7 +44,7 @@ $result = $conn->query($sql);
     <meta charset="utf-8">
     <title>دانش‌آموزان کلاس <?= htmlspecialchars($class['name']) ?></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -178,7 +178,7 @@ $result = $conn->query($sql);
                         <!-- Action Bar -->
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                             <h2 class="text-lg sm:text-xl font-semibold text-gray-900">مدیریت دانش‌آموزان</h2>
-                            <a href="student_add.php?class_id=<?= $class_id ?>" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center text-sm sm:text-base"> افزودن دانش‌آموز </a>
+                            <!-- <a href="student_add.php?class_id=<?= $class_id ?>" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center text-sm sm:text-base"> افزودن دانش‌آموز </a> -->
                         </div>
                         <!-- Search Form -->
                         <form method="GET" class="mb-6 flex flex-col sm:flex-row gap-3">
