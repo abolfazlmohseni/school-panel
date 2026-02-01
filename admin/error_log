@@ -1,0 +1,12 @@
+[19-Dec-2025 15:00:58 UTC] send_sms_process.php شروع شد - POST: Array
+(
+    [message] => والدین محترم
+دانش‌آموز {name} کلاس {class} امروز {date} غایب است.
+هنرستان سپهری راد
+)
+
+[19-Dec-2025 18:30:58 Asia/Tehran] خطا در ذخیره لاگ برای شماره 09940564287: Unknown column 'student_id' in 'INSERT INTO'
+[19-Dec-2025 15:01:01 UTC] send_sms_process.php شروع شد - POST: Array
+(
+)
+

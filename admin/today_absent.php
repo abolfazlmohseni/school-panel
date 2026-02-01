@@ -106,7 +106,7 @@ $today_persian = $weekdays_persian[$weekday_number];
     <meta charset="utf-8">
     <title>غایبین امروز</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -270,12 +270,12 @@ $today_persian = $weekdays_persian[$weekday_number];
                     <!-- Total Absent Card -->
                     <div class="stat-card bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/30 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
                                 امروز
                             </div>
                         </div>
@@ -285,12 +285,12 @@ $today_persian = $weekdays_persian[$weekday_number];
                     <!-- کلاس‌های دارای غایب Card -->
                     <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/30 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
                                 کلاس‌های مختلف
                             </div>
                         </div>

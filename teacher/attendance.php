@@ -161,7 +161,7 @@ foreach ($students as $student) {
     <meta charset="utf-8">
     <title>ثبت حضور و غیاب</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -208,15 +208,15 @@ foreach ($students as $student) {
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden"></div>
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col">
             <!-- Logo & User Info -->
-            <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
+         <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-3">هنرستان سپهری راد</h1>
-                <div class="flex items-center gap-3 bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="flex items-center gap-3 bg-white/20 rounded-lg p-3">
                     <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
                         <?php echo mb_substr($first_name, 0, 1, 'UTF-8') . mb_substr($last_name, 0, 1, 'UTF-8'); ?>
                     </div>

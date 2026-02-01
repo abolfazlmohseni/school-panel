@@ -2,6 +2,7 @@
 session_start();
 require_once '../../user/config.php';
 
+
 // چک‌کردن ورود مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header('Location: ../login.php');
@@ -16,7 +17,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     <meta charset="utf-8">
     <title>افزودن کلاس</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;

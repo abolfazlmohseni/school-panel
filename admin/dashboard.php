@@ -170,7 +170,8 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
     <meta charset="utf-8">
     <title>داشبورد</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!--<script src="https://cdn.tailwindcss.com"></script>-->
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -335,15 +336,17 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                 <!-- Statistics Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                     <!-- Total Students Card -->
-                    <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
+                    <div class="stat-card bg-blue-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
                                     </path>
                                 </svg>
                             </div>
-
+                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
+                                +<?php echo $total_students > 0 ? round($total_students / 10) : 0; ?>%
+                            </div>
                         </div>
                         <h3 class="text-3xl font-bold mb-1"><?php echo $total_students; ?></h3>
                         <p class="text-blue-100 text-sm">تعداد دانش‌آموزان</p>
@@ -352,12 +355,12 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     <!-- Total Classes Card -->
                     <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
                                 <?php echo $today_classes_count; ?> امروز
                             </div>
                         </div>
@@ -368,10 +371,13 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     <!-- Total Teachers Card -->
                     <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 </svg>
+                            </div>
+                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
+                                <?php echo count($active_teachers); ?> فعال
                             </div>
                         </div>
                         <h3 class="text-3xl font-bold mb-1"><?php echo $total_teachers; ?></h3>
@@ -381,12 +387,12 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     <!-- Today's Attendance Card -->
                     <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
                                 <?php echo $attendance_data['total_records'] ?? 0; ?> ثبت
                             </div>
                         </div>
@@ -433,7 +439,9 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                     <?php endforeach; ?>
                                 </div>
                                 <div class="mt-4 text-center">
-
+                                    <a href="programs.php?day=<?php echo urlencode($today_persian); ?>" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        مشاهده همه کلاس‌های امروز →
+                                    </a>
                                 </div>
                             <?php else: ?>
                                 <div class="text-center py-8 text-gray-500">
@@ -486,6 +494,9 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                     <?php endforeach; ?>
                                 </div>
                                 <div class="mt-4 text-center">
+                                    <a href="attendance_report.php" class="text-green-600 hover:text-green-800 text-sm font-medium">
+                                        مشاهده گزارش کامل حضور و غیاب →
+                                    </a>
                                 </div>
                             <?php else: ?>
                                 <div class="text-center py-8 text-gray-500">

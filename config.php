@@ -3,7 +3,7 @@
 $host = 'localhost';
 $username = 'root';  // تغییر به نام کاربری دیتابیس شما
 $password = '';      // تغییر به رمز دیتابیس شما
-$database = 'attendance_system';  // تغییر به نام دیتابیس شما
+$database = 'sepehrir_school';  // تغییر به نام دیتابیس شما
 
 $conn = new mysqli($host, $username, $password, $database);
 

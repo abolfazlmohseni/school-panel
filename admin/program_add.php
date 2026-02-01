@@ -19,9 +19,9 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>افزودن برنامه جدید</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
 </head>
-<script src="https://cdn.tailwindcss.com"></script>
+
 <style>
     body {
         box-sizing: border-box;

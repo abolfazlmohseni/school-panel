@@ -100,14 +100,7 @@ $formatted_date = $jalali_date[0] . '/' . sprintf('%02d', $jalali_date[1]) . '/'
 <head>
     <meta charset="UTF-8">
     <title>ویرایش حضور و غیاب</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="../styles/output.css">
 </head>
 
 <body class="bg-gray-50">

@@ -26,7 +26,7 @@ $classes_result = $conn->query("SELECT id, name FROM classes");
     <meta charset="utf-8">
     <title>ویرایش دانش‌آموز</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;

@@ -141,16 +141,10 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
     <meta charset="utf-8">
     <title>داشبورد دبیر</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
-        }
-
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-
-        * {
-            font-family: 'Vazirmatn', sans-serif;
         }
 
         .sidebar {
@@ -196,15 +190,15 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden"></div>
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col">
             <!-- Logo & User Info -->
-            <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
+           <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-3">هنرستان سپهری راد</h1>
-                <div class="flex items-center gap-3 bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="flex items-center gap-3 bg-white/20 rounded-lg p-3">
                     <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
                         <?php echo mb_substr($first_name, 0, 1, 'UTF-8') . mb_substr($last_name, 0, 1, 'UTF-8'); ?>
                     </div>
@@ -297,7 +291,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <!-- کلاس‌های امروز -->
                     <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
@@ -310,7 +304,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <!-- دانش‌آموزان امروز -->
                     <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                 </svg>
@@ -323,7 +317,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <!-- حاضرین امروز -->
                     <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -336,7 +330,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <!-- درصد حضور امروز -->
                     <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                 </svg>
@@ -507,7 +501,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                                                         <?php echo htmlspecialchars($program['class_name']); ?>
                                                     </div>
                                                     <div class="text-gray-600 text-sm mb-3">
-                                                        زنگ <?php echo htmlspecialchars($program['schedule']); ?>
+                                                         <?php echo htmlspecialchars($program['schedule']); ?>
                                                     </div>
                                                     <a href="attendance.php?program_id=<?php echo $program['program_id']; ?>"
                                                         class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200 transition duration-200">

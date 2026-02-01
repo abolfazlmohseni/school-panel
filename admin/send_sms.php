@@ -87,7 +87,7 @@ $today_persian = $weekdays_persian[$weekday_number];
     <meta charset="utf-8">
     <title>ارسال پیامک</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -252,12 +252,12 @@ $today_persian = $weekdays_persian[$weekday_number];
                     <!-- Total Recipients Card -->
                     <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/30 px-2 py-1 rounded-full">
                                 قابل ارسال
                             </div>
                         </div>
@@ -266,30 +266,30 @@ $today_persian = $weekdays_persian[$weekday_number];
                     </div>
 
                     <!-- Message Length Card -->
-                    <!-- <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                            </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
-                                حداکثر
-                            </div>
-                        </div>
-                        <h3 class="text-3xl font-bold mb-1">160</h3>
-                        <p class="text-blue-100 text-sm">کاراکتر مجاز</p>
-                    </div> -->
+                    <!--<div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">-->
+                    <!--    <div class="flex items-center justify-between mb-4">-->
+                    <!--        <div class="p-3 bg-white bg-opacity-20 rounded-lg">-->
+                    <!--            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">-->
+                    <!--                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>-->
+                    <!--            </svg>-->
+                    <!--        </div>-->
+                    <!--        <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">-->
+                    <!--            حداکثر-->
+                    <!--        </div>-->
+                    <!--    </div>-->
+                    <!--    <h3 class="text-3xl font-bold mb-1">160</h3>-->
+                    <!--    <p class="text-blue-100 text-sm">کاراکتر مجاز</p>-->
+                    <!--</div>-->
 
                     <!-- Date Card -->
                     <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/30 px-2 py-1 rounded-full">
                                 امروز
                             </div>
                         </div>
