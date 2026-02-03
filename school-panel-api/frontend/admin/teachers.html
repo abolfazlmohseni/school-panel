@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لیست دبیران - سیستم حضور و غیاب</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/app.js" defer></script>
+    <script src="../js/teacherManager.js" defer></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-hidden {
+            transform: translateX(100%);
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar-hidden {
+                transform: translateX(0);
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gray-100">
+    <!-- Mobile Menu Button -->
+    <button id="menuToggle" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden">
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar sidebar-hidden fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
+        <div class="h-full flex flex-col">
+            <!-- Logo & Title -->
+            <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
+                <h1 class="text-xl font-bold text-white mb-1">هنرستان سپهری راد</h1>
+                <p class="text-blue-100 text-sm">سامانه حضور و غیاب</p>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="flex-1 p-4 overflow-y-auto">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="dashboard.html"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-tachometer-alt"></i>
+                            داشبورد
+                        </a>
+                    </li>
+                    <li>
+                        <a href="teachers.html"
+                            class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            بخش دبیران
+                        </a>
+                    </li>
+                    <li>
+                        <a href="classes.html"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-school"></i>
+                            کلاس ها
+                        </a>
+                    </li>
+                    <li>
+                        <a href="students.html"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-users"></i>
+                            دانش آموزان
+                        </a>
+                    </li>
+                    <li>
+                        <a href="programs.html"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-calendar-alt"></i>
+                            برنامه زمانی
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-200">
+                <button id="logoutBtn"
+                    class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
+                    <i class="fas fa-sign-out-alt"></i>
+                    خروج
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="min-h-screen lg:mr-64">
+        <div class="p-4 sm:p-6 lg:p-8">
+            <div class="w-full">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">مدیریت دبیران</h1>
+                    <p class="text-gray-600 text-sm sm:text-base">مدیریت اطلاعات دبیران هنرستان</p>
+                </div>
+
+                <!-- Flash Messages Container -->
+                <div id="flashMessages"></div>
+
+                <!-- Action Bar -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <input type="text" id="searchInput"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="جستجوی دبیر...">
+                                <i
+                                    class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button id="addTeacherBtn"
+                            class="px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+                            <i class="fas fa-user-plus"></i>
+                            افزودن دبیر جدید
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="text-center py-12">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-gray-600">در حال بارگذاری لیست دبیران...</p>
+                </div>
+
+                <!-- Teachers Table -->
+                <div id="teachersTable" class="hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50 border-b-2 border-gray-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">#</th>
+                                        <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">نام و نام
+                                            خانوادگی</th>
+                                        <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">نام کاربری
+                                        </th>
+                                        <th
+                                            class="px-4 py-3 text-right text-sm font-semibold text-gray-700 hidden md:table-cell">
+                                            تاریخ ایجاد</th>
+                                        <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">اقدامات
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teachersList" class="divide-y divide-gray-200">
+                                    <!-- Teachers will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div id="emptyState" class="hidden text-center py-12">
+                            <i class="fas fa-user-graduate text-4xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 mb-4">هیچ دبیری ثبت نشده است.</p>
+                            <button id="addFirstTeacherBtn"
+                                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                افزودن اولین دبیر
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorState" class="hidden text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+                    <p class="text-gray-700 mb-4" id="errorMessage">خطا در بارگذاری لیست دبیران</p>
+                    <button onclick="loadTeachers()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        تلاش مجدد
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Teacher Modal -->
+    <div id="teacherModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Overlay -->
+            <div class="fixed inset-0 modal-overlay transition-opacity" aria-hidden="true"></div>
+
+            <!-- Modal Content -->
+            <div
+                class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900" id="modalTitle">افزودن دبیر جدید</h3>
+                </div>
+
+                <form id="teacherForm" class="p-6 space-y-4">
+                    <input type="hidden" id="teacherId">
+
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">نام <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="firstName" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div id="firstNameError" class="text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">نام خانوادگی <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="lastName" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div id="lastNameError" class="text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-2">نام کاربری <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="username" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div id="usernameError" class="text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div id="passwordField">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">رمز عبور <span
+                                class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="password" id="password" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10">
+                            <button type="button" onclick="togglePassword('password')"
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="passwordError" class="text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div id="newPasswordField" class="hidden">
+                        <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-2">رمز عبور جدید
+                            (اختیاری)</label>
+                        <div class="relative">
+                            <input type="password" id="newPassword"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10">
+                            <button type="button" onclick="togglePassword('newPassword')"
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">در صورت خالی گذاشتن، رمز قبلی حفظ خواهد شد.</p>
+                    </div>
+
+                    <div id="formErrors" class="text-red-500 text-sm hidden"></div>
+                </form>
+
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-between">
+                    <button type="button" onclick="closeModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+                        لغو
+                    </button>
+                    <button type="button" onclick="saveTeacher()" id="saveTeacherBtn"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                        <span>ذخیره</span>
+                        <div id="saveLoading" class="hidden loading-spinner"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 modal-overlay transition-opacity" aria-hidden="true"></div>
+
+            <div
+                class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900">تأیید حذف</h3>
+                </div>
+
+                <div class="p-6">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mx-auto mb-4 block"></i>
+                    <p class="text-gray-700 mb-6" id="deleteMessage">آیا از حذف این دبیر اطمینان دارید؟</p>
+
+                    <div class="flex justify-between">
+                        <button type="button" onclick="closeDeleteModal()"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+                            لغو
+                        </button>
+                        <button type="button" onclick="confirmDelete()" id="confirmDeleteBtn"
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center gap-2">
+                            <span>حذف</span>
+                            <div id="deleteLoading" class="hidden loading-spinner"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // مدیریت سایدبار
+        const menuToggle = document.getElementById('menuToggle');
+        const overlay = document.getElementById('overlay');
+        const sidebar = document.getElementById('sidebar');
+
+        menuToggle.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('sidebar-hidden');
+            overlay.classList.toggle('hidden');
+        }
+
+        // مدیریت خروج
+        document.getElementById('logoutBtn').addEventListener('click', async function () {
+            const result = await apiService.logout();
+            if (result.success) {
+                window.location.href = '../index.html';
+            }
+        });
+
+        // تابع نمایش پیام
+        function showFlashMessage(message, type = 'success') {
+            const flashMessages = document.getElementById('flashMessages');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `mb-4 p-4 rounded-lg fade-in ${type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' :
+                    type === 'error' ? 'bg-red-50 border border-red-200 text-red-800' :
+                        'bg-blue-50 border border-blue-200 text-blue-800'
+                }`;
+
+            messageDiv.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            flashMessages.appendChild(messageDiv);
+
+            // حذف خودکار بعد از 5 ثانیه
+            setTimeout(() => {
+                if (messageDiv.parentElement) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // تابع toggle password visibility
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // بارگذاری لیست دبیران
+        async function loadTeachers() {
+            try {
+                // نمایش حالت لودینگ
+                document.getElementById('loadingState').classList.remove('hidden');
+                document.getElementById('teachersTable').classList.add('hidden');
+                document.getElementById('errorState').classList.add('hidden');
+
+                // بررسی احراز هویت
+                const user = await apiService.checkAuth();
+                if (!user || user.role !== 'admin') {
+                    window.location.href = '../index.html';
+                    return;
+                }
+
+                // دریافت لیست دبیران از API
+                const response = await apiService.request('/teachers');
+
+                if (response.success) {
+                    displayTeachers(response.data);
+
+                    document.getElementById('loadingState').classList.add('hidden');
+                    document.getElementById('teachersTable').classList.remove('hidden');
+
+                    // اگر دبیری وجود ندارد
+                    if (response.count === 0) {
+                        document.getElementById('teachersList').classList.add('hidden');
+                        document.getElementById('emptyState').classList.remove('hidden');
+                    } else {
+                        document.getElementById('teachersList').classList.remove('hidden');
+                        document.getElementById('emptyState').classList.add('hidden');
+                    }
+                } else {
+                    throw new Error('Failed to load teachers');
+                }
+
+            } catch (error) {
+                console.error('Error loading teachers:', error);
+
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('errorState').classList.remove('hidden');
+                document.getElementById('errorMessage').textContent =
+                    error.message || 'خطا در بارگذاری لیست دبیران';
+            }
+        }
+
+        // نمایش دبیران در جدول
+        function displayTeachers(teachers) {
+            const teachersList = document.getElementById('teachersList');
+            teachersList.innerHTML = '';
+
+            teachers.forEach((teacher, index) => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors';
+                row.innerHTML = `
+                    <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
+                    <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                        ${teacher.first_name} ${teacher.last_name}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-600">${teacher.username}</td>
+                    <td class="px-4 py-3 text-sm text-gray-500 hidden md:table-cell">
+                        ${new Date(teacher.created_at).toLocaleDateString('fa-IR')}
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="editTeacher(${teacher.id})" 
+                                class="px-3 py-1.5 bg-yellow-500 text-white text-sm font-medium rounded-lg hover:bg-yellow-600 transition-colors">
+                                <i class="fas fa-edit ml-1"></i>
+                                ویرایش
+                            </button>
+                            <button onclick="showDeleteModal(${teacher.id}, '${teacher.first_name} ${teacher.last_name}')" 
+                                class="px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors">
+                                <i class="fas fa-trash ml-1"></i>
+                                حذف
+                            </button>
+                        </div>
+                    </td>
+                `;
+                teachersList.appendChild(row);
+            });
+        }
+
+        // جستجوی دبیران
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function (e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                const searchTerm = e.target.value.trim();
+
+                if (searchTerm.length === 0) {
+                    loadTeachers();
+                    return;
+                }
+
+                try {
+                    const response = await apiService.request(`/teachers/search?q=${encodeURIComponent(searchTerm)}`);
+                    if (response.success) {
+                        displayTeachers(response.data);
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    showFlashMessage('خطا در جستجو', 'error');
+                }
+            }, 500);
+        });
+
+        // متغیرهای مربوط به modal
+        let currentTeacherId = null;
+        let teacherToDelete = null;
+
+        // باز کردن modal برای افزودن دبیر جدید
+        document.getElementById('addTeacherBtn').addEventListener('click', () => openModal());
+        document.getElementById('addFirstTeacherBtn').addEventListener('click', () => openModal());
+
+        function openModal(teacherId = null) {
+            currentTeacherId = teacherId;
+
+            // تنظیم عنوان modal
+            document.getElementById('modalTitle').textContent =
+                teacherId ? 'ویرایش دبیر' : 'افزودن دبیر جدید';
+
+            // نمایش/مخفی کردن فیلدهای رمز عبور
+            if (teacherId) {
+                document.getElementById('passwordField').classList.add('hidden');
+                document.getElementById('newPasswordField').classList.remove('hidden');
+                loadTeacherData(teacherId);
+            } else {
+                document.getElementById('passwordField').classList.remove('hidden');
+                document.getElementById('newPasswordField').classList.add('hidden');
+                resetForm();
+            }
+
+            // نمایش modal
+            document.getElementById('teacherModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('teacherModal').classList.add('hidden');
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('teacherForm').reset();
+            document.getElementById('teacherId').value = '';
+
+            // پاک کردن پیام‌های خطا
+            ['firstNameError', 'lastNameError', 'usernameError', 'passwordError'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById('formErrors').classList.add('hidden');
+        }
+
+        // بارگذاری اطلاعات دبیر برای ویرایش
+        async function loadTeacherData(teacherId) {
+            try {
+                const response = await apiService.request(`/teachers/get?id=${teacherId}`);
+
+                if (response.success) {
+                    const teacher = response.data;
+                    document.getElementById('teacherId').value = teacher.id;
+                    document.getElementById('firstName').value = teacher.first_name;
+                    document.getElementById('lastName').value = teacher.last_name;
+                    document.getElementById('username').value = teacher.username;
+                } else {
+                    showFlashMessage('خطا در بارگذاری اطلاعات دبیر', 'error');
+                    closeModal();
+                }
+            } catch (error) {
+                console.error('Error loading teacher data:', error);
+                showFlashMessage('خطا در بارگذاری اطلاعات دبیر', 'error');
+                closeModal();
+            }
+        }
+
+        // ویرایش دبیر
+        function editTeacher(teacherId) {
+            openModal(teacherId);
+        }
+
+        // ذخیره دبیر (افزودن یا ویرایش)
+        async function saveTeacher() {
+            try {
+                // نمایش حالت لودینگ
+                document.getElementById('saveLoading').classList.remove('hidden');
+                document.getElementById('saveTeacherBtn').disabled = true;
+
+                // جمع‌آوری داده‌ها
+                const teacherId = document.getElementById('teacherId').value;
+                const formData = {
+                    first_name: document.getElementById('firstName').value.trim(),
+                    last_name: document.getElementById('lastName').value.trim(),
+                    username: document.getElementById('username').value.trim()
+                };
+
+                // اضافه کردن رمز عبور بر اساس حالت
+                if (teacherId) {
+                    formData.id = teacherId;
+                    const newPassword = document.getElementById('newPassword').value.trim();
+                    if (newPassword) {
+                        formData.new_password = newPassword;
+                    }
+                } else {
+                    formData.password = document.getElementById('password').value;
+                }
+
+                // ارسال به API
+                const endpoint = teacherId ? '/teachers/update' : '/teachers';
+                const response = await apiService.request(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.success) {
+                    showFlashMessage(response.message, 'success');
+                    closeModal();
+                    loadTeachers();
+                } else {
+                    // نمایش خطاها
+                    if (response.error_code === 'MISSING_FIELD_FIRST_NAME') {
+                        showError('firstNameError', 'نام الزامی است');
+                    }
+                    if (response.error_code === 'MISSING_FIELD_LAST_NAME') {
+                        showError('lastNameError', 'نام خانوادگی الزامی است');
+                    }
+                    if (response.error_code === 'MISSING_FIELD_USERNAME') {
+                        showError('usernameError', 'نام کاربری الزامی است');
+                    }
+                    if (response.error_code === 'MISSING_FIELD_PASSWORD') {
+                        showError('passwordError', 'رمز عبور الزامی است');
+                    }
+                    if (response.error_code === 'USERNAME_EXISTS') {
+                        showError('usernameError', 'این نام کاربری قبلا استفاده شده است');
+                    }
+
+                    if (response.message) {
+                        document.getElementById('formErrors').textContent = response.message;
+                        document.getElementById('formErrors').classList.remove('hidden');
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error saving teacher:', error);
+                showFlashMessage('خطا در ذخیره اطلاعات', 'error');
+            } finally {
+                document.getElementById('saveLoading').classList.add('hidden');
+                document.getElementById('saveTeacherBtn').disabled = false;
+            }
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+
+        // مدیریت حذف دبیر
+        function showDeleteModal(teacherId, teacherName) {
+            teacherToDelete = teacherId;
+            document.getElementById('deleteMessage').textContent =
+                `آیا از حذف دبیر "${teacherName}" اطمینان دارید؟ این عمل قابل بازگشت نیست.`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            teacherToDelete = null;
+        }
+
+        async function confirmDelete() {
+            try {
+                document.getElementById('deleteLoading').classList.remove('hidden');
+                document.getElementById('confirmDeleteBtn').disabled = true;
+
+                const response = await apiService.request('/teachers/delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ id: teacherToDelete })
+                });
+
+                if (response.success) {
+                    showFlashMessage(response.message, 'success');
+                    closeDeleteModal();
+                    loadTeachers();
+                } else {
+                    showFlashMessage(response.message || 'خطا در حذف دبیر', 'error');
+                    closeDeleteModal();
+                }
+
+            } catch (error) {
+                console.error('Error deleting teacher:', error);
+                showFlashMessage('خطا در حذف دبیر', 'error');
+            } finally {
+                document.getElementById('deleteLoading').classList.add('hidden');
+                document.getElementById('confirmDeleteBtn').disabled = false;
+            }
+        }
+
+        // بارگذاری اولیه
+        document.addEventListener('DOMContentLoaded', function () {
+            loadTeachers();
+        });
+    </script>
+</body>
+
+</html>
