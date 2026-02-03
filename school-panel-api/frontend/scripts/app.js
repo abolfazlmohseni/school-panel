@@ -1,7 +1,7 @@
 // public/js/app.js
 
 class ApiService {
-    constructor(baseUrl = 'http://localhost/api') {
+    constructor(baseUrl = '/api') {
         this.baseUrl = baseUrl;
         this.user = this.getUserFromStorage();
     }
@@ -132,16 +132,22 @@ class ApiService {
         try {
             const response = await fetch(`${this.baseUrl}${endpoint}`, finalOptions);
 
+            // بررسی وضعیت‌های خاص HTTP
             if (response.status === 401) {
                 // Unauthorized - احتمالا session منقضی شده
                 this.clearUser();
-                window.location.href = 'index.html';
+                window.location.href = '/public/index.html';
                 return null;
             }
 
             if (response.status === 403) {
                 // Forbidden - دسترسی ندارید
                 throw new Error('دسترسی غیرمجاز');
+            }
+
+            if (response.status === 404) {
+                // Not Found
+                throw new Error('منبع مورد نظر یافت نشد');
             }
 
             const result = await response.json();
@@ -176,6 +182,21 @@ class ApiService {
 
     isTeacher() {
         return this.hasRole('teacher');
+    }
+}
+
+// تابع‌های کمکی global
+function showLoading(selector = 'body') {
+    const element = document.querySelector(selector);
+    if (element) {
+        element.classList.add('loading');
+    }
+}
+
+function hideLoading(selector = 'body') {
+    const element = document.querySelector(selector);
+    if (element) {
+        element.classList.remove('loading');
     }
 }
 

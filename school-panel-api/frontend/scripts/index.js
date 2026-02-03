@@ -1,5 +1,5 @@
 // تنظیمات API
-const API_BASE_URL = 'http://localhost/backend/api';
+const API_BASE_URL = 'http://localhost/school-panel-api/backend/api';
 
 // عناصر DOM
 const loginForm = document.getElementById('loginForm');
