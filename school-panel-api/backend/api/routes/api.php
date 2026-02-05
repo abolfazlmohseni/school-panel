@@ -1,128 +1,174 @@
 <?php
-// api/routes/api.php
-
-require_once __DIR__ . '/../middleware/CorsMiddleware.php';
-require_once __DIR__ . '/../controllers/AuthController.php';
-require_once __DIR__ . '/../controllers/DashboardController.php';
-require_once __DIR__ . '/../controllers/TeacherController.php';
+// school-panel-api/backend/api/routes/api.php
 
 class ApiRouter {
     private $routes = [];
     
     public function __construct() {
-        CorsMiddleware::handle();
         $this->registerRoutes();
     }
     
     private function registerRoutes() {
-        $this->routes = [
-            'POST' => [
-                // احراز هویت
-                '/api/auth/login' => ['AuthController', 'login'],
-                '/api/auth/logout' => ['AuthController', 'logout'],
-                
-                // دبیران
-                '/api/teachers' => ['TeacherController', 'create'],
-                '/api/teachers/update' => ['TeacherController', 'update'],
-                '/api/teachers/delete' => ['TeacherController', 'delete'],
-                '/api/teachers/search' => ['TeacherController', 'search']
-            ],
-            'GET' => [
-                // احراز هویت
-                '/api/auth/check' => ['AuthController', 'check'],
-                '/api/auth/profile' => ['AuthController', 'getProfile'],
-                
-                // داشبورد
-                '/api/dashboard/stats' => ['DashboardController', 'getStats'],
-                '/api/dashboard/today-classes' => ['DashboardController', 'getTodayClasses'],
-                '/api/dashboard/recent-attendance' => ['DashboardController', 'getRecentAttendance'],
-                '/api/dashboard/active-teachers' => ['DashboardController', 'getActiveTeachers'],
-                '/api/dashboard/jalali-date' => ['DashboardController', 'getJalaliDate'],
-                '/api/dashboard/all' => ['DashboardController', 'getAllData'],
-                
-                // دبیران
-                '/api/teachers' => ['TeacherController', 'getAll'],
-                '/api/teachers/get' => ['TeacherController', 'getOne'],
-                
-                // تست API
-                '/api/test' => function() {
-                    return ['success' => true, 'message' => 'API is working'];
-                }
-            ]
+        // Routeهای GET
+        $this->routes['GET'] = [
+            '/' => function() {
+                return [
+                    'success' => true, 
+                    'message' => 'School Panel API',
+                    'version' => '1.0',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            },
+            '/test' => function() {
+                return [
+                    'success' => true, 
+                    'message' => 'API Test Successful',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            },
+            '/auth/check' => ['AuthController', 'check'],
+            '/auth/profile' => ['AuthController', 'getProfile'],
+            '/dashboard/stats' => ['DashboardController', 'getStats'],
+            '/dashboard/all' => ['DashboardController', 'getAllData'],
+            '/teachers' => ['TeacherController', 'getAll'],
+            '/teachers/get' => ['TeacherController', 'getOne'],
+        ];
+        
+        // Routeهای POST
+        $this->routes['POST'] = [
+            '/auth/login' => ['AuthController', 'login'],
+            '/auth/logout' => ['AuthController', 'logout'],
+            '/teachers' => ['TeacherController', 'create'],
+            '/teachers/update' => ['TeacherController', 'update'],
+            '/teachers/delete' => ['TeacherController', 'delete'],
+            '/teachers/search' => ['TeacherController', 'search'],
         ];
     }
     
-    public function handleRequest() {
+    public function handleRequest($request_path) {
         $method = $_SERVER['REQUEST_METHOD'];
-        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
-        // حذف query string از مسیر
-        $path = strtok($path, '?');
+        // نرمال‌سازی مسیر
+        $request_path = '/' . trim($request_path, '/');
         
-        // یافتن مسیر مطابق
-        foreach ($this->routes[$method] ?? [] as $route => $handler) {
-            if ($route === $path) {
-                // اگر handler یک تابع باشد
-                if (is_callable($handler)) {
-                    $result = $handler();
-                } 
-                // اگر handler یک کلاس و متد باشد
-                else if (is_array($handler) && count($handler) === 2) {
-                    $controllerName = $handler[0];
-                    $methodName = $handler[1];
-                    
-                    $controller = new $controllerName();
-                    
-                    // دریافت داده‌های ورودی
-                    $input = $this->getInputData($method);
-                    
-                    // فراخوانی متد کنترلر
-                    $result = $controller->$methodName($input);
-                } else {
-                    $result = [
-                        'success' => false,
-                        'message' => 'Invalid route handler',
-                        'error_code' => 'INVALID_HANDLER'
-                    ];
+        error_log("Handling request: $method $request_path");
+        
+        // بررسی وجود route دقیق
+        if (isset($this->routes[$method][$request_path])) {
+            $handler = $this->routes[$method][$request_path];
+            $this->executeHandler($handler);
+        } else {
+            // اگر route پیدا نشد، تلاش برای یافتن مسیرهای مشابه
+            $found = false;
+            foreach ($this->routes[$method] as $route => $handler) {
+                // تبدیل مسیرهای پویا مانند /teachers/123 به /teachers/get
+                if ($this->isDynamicRoute($route, $request_path)) {
+                    $this->executeHandler($handler);
+                    $found = true;
+                    break;
                 }
-                
-                $this->sendResponse($result);
-                return;
+            }
+            
+            if (!$found) {
+                // اگر route پیدا نشد
+                $this->sendResponse([
+                    'success' => false,
+                    'message' => 'Endpoint not found: ' . $request_path,
+                    'error_code' => 'NOT_FOUND',
+                    'available_routes' => array_keys($this->routes[$method] ?? [])
+                ], 404);
             }
         }
-        
-        // اگر مسیر پیدا نشد
-        $this->sendResponse([
-            'success' => false,
-            'message' => 'Endpoint not found.',
-            'error_code' => 'NOT_FOUND'
-        ], 404);
     }
     
-    private function getInputData($method) {
+    private function isDynamicRoute($route, $request_path) {
+        // بررسی مسیرهای پویا (مانند /teachers/123)
+        // فعلاً فقط مسیرهای دقیق را بررسی می‌کنیم
+        return false;
+    }
+    
+    private function executeHandler($handler) {
+        try {
+            if (is_callable($handler)) {
+                // اگر handler تابع باشد
+                $result = $handler();
+            } elseif (is_array($handler) && count($handler) === 2) {
+                // اگر handler آرایه [کلاس, متد] باشد
+                list($className, $methodName) = $handler;
+                
+                // بررسی وجود کلاس
+                if (!class_exists($className)) {
+                    throw new Exception("Class $className not found. Make sure autoloader is working.");
+                }
+                
+                // ایجاد نمونه از کلاس
+                $controller = new $className();
+                
+                // بررسی وجود متد
+                if (!method_exists($controller, $methodName)) {
+                    throw new Exception("Method $methodName not found in $className");
+                }
+                
+                // دریافت داده‌های ورودی
+                $input = $this->getInputData();
+                
+                // فراخوانی متد
+                $result = $controller->$methodName($input);
+            } else {
+                throw new Exception("Invalid handler type");
+            }
+            
+            // ارسال پاسخ
+            $this->sendResponse($result);
+            
+        } catch (Exception $e) {
+            error_log("Handler execution error: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            $this->sendResponse([
+                'success' => false,
+                'message' => 'Handler Error: ' . $e->getMessage(),
+                'error_code' => 'HANDLER_ERROR',
+                'debug_info' => [
+                    'handler' => $handler,
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
+            ], 500);
+        }
+    }
+    
+    private function getInputData() {
         $input = [];
+        $method = $_SERVER['REQUEST_METHOD'];
         
         if ($method === 'POST' || $method === 'PUT' || $method === 'PATCH') {
             $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
             
             if (strpos($contentType, 'application/json') !== false) {
-                $input = json_decode(file_get_contents('php://input'), true) ?? [];
+                $jsonInput = file_get_contents('php://input');
+                $input = json_decode($jsonInput, true) ?? [];
+                
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    error_log("JSON parse error: " . json_last_error_msg());
+                    $input = [];
+                }
             } else {
                 $input = $_POST;
                 
-                // برای GET پارامترها در query string
-                if (empty($input) && $method === 'POST') {
-                    parse_str(file_get_contents('php://input'), $input);
+                // اگر POST خالی بود، سعی کن JSON رو از php://input بخونی
+                if (empty($input)) {
+                    $jsonInput = file_get_contents('php://input');
+                    if (!empty($jsonInput)) {
+                        $input = json_decode($jsonInput, true) ?? [];
+                    }
                 }
-            }
-            
-            // همچنین query string را نیز بررسی می‌کنیم
-            if (!empty($_GET)) {
-                $input = array_merge($input, $_GET);
             }
         } elseif ($method === 'GET') {
             $input = $_GET;
         }
+        
+        // لاگ برای دیباگ
+        error_log("Input data for $method: " . json_encode($input));
         
         return $input;
     }
@@ -131,8 +177,10 @@ class ApiRouter {
         http_response_code($statusCode);
         header('Content-Type: application/json; charset=utf-8');
         
-        // اضافه کردن timestamp به پاسخ
-        $data['timestamp'] = date('Y-m-d H:i:s');
+        // اضافه کردن timestamp اگر داده آرایه باشد
+        if (is_array($data) && !isset($data['timestamp'])) {
+            $data['timestamp'] = date('Y-m-d H:i:s');
+        }
         
         echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }

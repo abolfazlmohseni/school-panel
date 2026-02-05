@@ -9,7 +9,7 @@ class Database {
         $host = 'localhost';
         $username = 'root';
         $password = '';
-        $database = 'attendance_system';
+        $database = 'sepehrir_school';
         
         $this->conn = new mysqli($host, $username, $password, $database);
         
