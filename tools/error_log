@@ -1,0 +1,25 @@
+[18-Dec-2025 21:05:59 UTC] PHP Warning:  require_once(/home/sepehrir/public_html/tools../config.php): Failed to open stream: No such file or directory in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:05:59 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/sepehrir/public_html/tools../config.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/sepehrir/public_html/tools/create_admin.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:07:59 UTC] PHP Warning:  require_once(/home/sepehrir/public_html/tools../config.php): Failed to open stream: No such file or directory in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:07:59 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/sepehrir/public_html/tools../config.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/sepehrir/public_html/tools/create_admin.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:08:42 UTC] PHP Warning:  require_once(/home/sepehrir/public_html/tools../user/config.php): Failed to open stream: No such file or directory in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:08:42 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/sepehrir/public_html/tools../user/config.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/sepehrir/public_html/tools/create_admin.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:09:32 UTC] PHP Warning:  require_once(/home/sepehrir/public_html/tools../user/config.php): Failed to open stream: No such file or directory in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:09:32 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/sepehrir/public_html/tools../user/config.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/sepehrir/public_html/tools/create_admin.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:10:20 UTC] PHP Warning:  require_once(/home/sepehrir/public_html/tools../config.php): Failed to open stream: No such file or directory in /home/sepehrir/public_html/tools/create_admin.php on line 3
+[18-Dec-2025 21:10:20 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/sepehrir/public_html/tools../config.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/sepehrir/public_html/tools/create_admin.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/sepehrir/public_html/tools/create_admin.php on line 3

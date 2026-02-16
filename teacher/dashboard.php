@@ -2,24 +2,20 @@
 session_start();
 require_once '../config.php';
 
-// ---------- فعال کردن نمایش خطاها ----------
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// ---------- چک ورود دبیر ----------
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: login.php");
     exit;
 }
 
-// استفاده مستقیم از نام ذخیره شده در سشن
 $first_name = $_SESSION['first_name'] ?? 'دبیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 $teacher_id = $_SESSION['user_id'];
 
-// ---------- آرایه تبدیل روزهای هفته ----------
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -30,7 +26,6 @@ $weekdays_persian = [
     6 => 'شنبه'
 ];
 
-// تاریخ امروز به شمسی
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -59,7 +54,6 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// ---------- گرفتن برنامه‌های کامل دبیر ----------
 $stmt = $conn->prepare("
     SELECT 
         p.id as program_id, 
@@ -89,14 +83,12 @@ $result = $stmt->get_result();
 $programs = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// ---------- فیلتر برنامه‌های امروز ----------
 $weekday_number = date('w'); // 0=یکشنبه, 1=دوشنبه, ...
 $today_persian = $weekdays_persian[$weekday_number];
 $today_classes = array_filter($programs, function ($p) use ($today_persian) {
     return $p['day_of_week'] === $today_persian;
 });
 
-// ---------- گروه‌بندی برنامه‌ها بر اساس روز ----------
 $grouped_by_day = [];
 foreach ($programs as $program) {
     $day = $program['day_of_week'];
@@ -106,12 +98,10 @@ foreach ($programs as $program) {
     $grouped_by_day[$day][] = $program;
 }
 
-// ---------- آمار امروز ----------
 $total_students_today = 0;
 $total_present_today = 0;
 
 foreach ($today_classes as $class) {
-    // تعداد دانش‌آموزان هر کلاس
     $stmt = $conn->prepare("SELECT COUNT(*) as student_count FROM students WHERE class_id = ?");
     $stmt->bind_param("i", $class['class_id']);
     $stmt->execute();
@@ -121,7 +111,6 @@ foreach ($today_classes as $class) {
 
     $total_students_today += $class_stats['student_count'];
 
-    // تعداد حاضرین امروز
     $stmt = $conn->prepare("
         SELECT COUNT(DISTINCT a.student_id) as present_count
         FROM attendance a
@@ -142,7 +131,6 @@ $attendance_rate_today = $total_students_today > 0
     ? round(($total_present_today / $total_students_today) * 100, 0)
     : 0;
 
-// ترتیب روزهای هفته فارسی
 $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
 ?>
 
@@ -151,18 +139,12 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
 
 <head>
     <meta charset="utf-8">
-    <title>داشبورد دبیر - سامانه حضور غیاب</title>
+    <title>داشبورد دبیر</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
-        }
-
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-
-        * {
-            font-family: 'Vazirmatn', sans-serif;
         }
 
         .sidebar {
@@ -208,15 +190,15 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden"></div>
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col">
             <!-- Logo & User Info -->
-            <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
+           <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-3">هنرستان سپهری راد</h1>
-                <div class="flex items-center gap-3 bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="flex items-center gap-3 bg-white/20 rounded-lg p-3">
                     <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
                         <?php echo mb_substr($first_name, 0, 1, 'UTF-8') . mb_substr($last_name, 0, 1, 'UTF-8'); ?>
                     </div>
@@ -309,7 +291,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <!-- کلاس‌های امروز -->
                     <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
@@ -322,7 +304,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <!-- دانش‌آموزان امروز -->
                     <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                 </svg>
@@ -335,7 +317,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <!-- حاضرین امروز -->
                     <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -348,7 +330,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <!-- درصد حضور امروز -->
                     <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                 </svg>
@@ -374,7 +356,6 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     <?php if (count($today_classes) > 0): ?>
                         <div class="space-y-3">
                             <?php foreach ($today_classes as $class):
-                                // تعداد دانش‌آموزان این کلاس
                                 $stmt = $conn->prepare("SELECT COUNT(*) as student_count FROM students WHERE class_id = ?");
                                 $stmt->bind_param("i", $class['class_id']);
                                 $stmt->execute();
@@ -382,7 +363,6 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                                 $class_stats = $result->fetch_assoc();
                                 $stmt->close();
 
-                                // تعداد حاضرین این کلاس امروز
                                 $stmt = $conn->prepare("
                                     SELECT COUNT(DISTINCT a.student_id) as present_count
                                     FROM attendance a
@@ -494,7 +474,6 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                     </div>
                 </div>
 
-                <!-- بخش کل برنامه هفتگی (خلاصه) -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <h2 class="text-xl font-semibold text-gray-700 mb-4">برنامه هفتگی شما</h2>
 
@@ -522,7 +501,7 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
                                                         <?php echo htmlspecialchars($program['class_name']); ?>
                                                     </div>
                                                     <div class="text-gray-600 text-sm mb-3">
-                                                        زنگ <?php echo htmlspecialchars($program['schedule']); ?>
+                                                         <?php echo htmlspecialchars($program['schedule']); ?>
                                                     </div>
                                                     <a href="attendance.php?program_id=<?php echo $program['program_id']; ?>"
                                                         class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200 transition duration-200">
@@ -566,7 +545,6 @@ $persian_days_order = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شن�
             overlay.classList.toggle('hidden');
         }
 
-        // رفرش خودکار صفحه هر 3 دقیقه برای آمار به روز
         setTimeout(function() {
             location.reload();
         }, 3 * 60 * 1000);

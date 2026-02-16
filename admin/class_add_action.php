@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک نقش مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header('Location: ../login.php');
     exit;

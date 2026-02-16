@@ -2,10 +2,26 @@
 session_start();
 require_once '../config.php';
 
-
-// چک‌کردن ورود مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header('Location: ../login.php');
+    exit;
+}
+
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($id <= 0) {
+    header('Location: classes.php');
+    exit;
+}
+
+// دریافت اطلاعات کلاس
+$stmt = $conn->prepare("SELECT id, name FROM classes WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$class = $result->fetch_assoc();
+
+if (!$class) {
+    header('Location: classes.php');
     exit;
 }
 ?>
@@ -15,7 +31,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 
 <head>
     <meta charset="utf-8">
-    <title>افزودن کلاس</title>
+    <title>ویرایش کلاس</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="../styles/output.css">
     <style>
@@ -124,7 +140,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
                             ارسال پیامک
                         </a>
                     </li>
-
                 </ul>
             </nav>
 
@@ -148,28 +163,41 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
             <div class="max-w-2xl mx-auto">
                 <!-- Header -->
                 <div class="mb-6">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">افزودن کلاس جدید</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">ویرایش کلاس</h1>
                     <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
-                </div><!-- Main Card -->
+                </div>
+                <!-- Main Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6 sm:p-8">
-                        <form action="class_add_action.php" method="post" class="space-y-6">
+                        <form action="class_edit_action.php" method="post" class="space-y-6">
+                            <input type="hidden" name="id" value="<?= $class['id'] ?>">
+
                             <!-- Class Name -->
                             <div>
                                 <label for="class_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام کلاس
                                     <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="class_name" name="class_name" required placeholder="مثال: کلاس دهم علوم تجربی" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base">
+                                <input type="text" id="class_name" name="class_name" required
+                                    value="<?= htmlspecialchars($class['name']) ?>"
+                                    placeholder="مثال: کلاس دهم علوم تجربی"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base">
                             </div>
+
                             <!-- Action Buttons -->
-                            <div class="flex flex-col sm:flex-row gap-3 pt-4"><button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base"> ثبت کلاس </button> <a href="classes.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base"> بازگشت به لیست </a>
+                            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base">
+                                    بروزرسانی کلاس
+                                </button>
+                                <a href="classes.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base">
+                                    بازگشت به لیست
+                                </a>
                             </div>
                         </form>
                     </div>
                 </div>
                 <!-- Info Box -->
                 <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p class="text-blue-800 text-xs sm:text-sm">💡 نام کلاس باید واضح و قابل تشخیص باشد تا مدیریت دانش‌آموزان آسان‌تر شود.</p>
+                    <p class="text-blue-800 text-xs sm:text-sm">💡 پس از ویرایش، تغییرات بلافاصله اعمال خواهد شد.</p>
                 </div>
             </div>
         </div>

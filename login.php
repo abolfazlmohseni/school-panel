@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <title>Document</title>
+    <title>هنرستان سپهری راد</title>
+    <link rel="stylesheet" href="./styles/output.css">
     <style>
         .auth-container {
             animation: slideUp 0.6s ease-out;
@@ -22,17 +22,50 @@
                 transform: translateY(0);
             }
         }
+
+        .error-message {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
+    <link rel="stylesheet" href="/styles/style.css">
 </head>
 
 <body dir="rtl">
+    <?php
+    session_start();
+    $error = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : '';
+    unset($_SESSION['login_error']); // پاک کردن ارور بعد از خواندن
+    ?>
+
     <div class="min-h-screen flex items-center justify-center p-4">
         <div class="w-full max-w-md auth-container">
             <div class="text-center mb-8">
-                <h1 class="text-4xl font-bold  mb-2">سپهری راد</h1>
+                <h1 class="text-4xl font-bold mb-2">سپهری راد</h1>
                 <p class="text-black/60 text-lg">حضور غیاب انلاین دانش آموزان</p>
             </div>
             <div class="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/20">
+
+                <!-- نمایش خطا اگر وجود داشته باشد -->
+                <?php if ($error): ?>
+                    <div class="mb-6 error-message">
+                        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                            <?php echo htmlspecialchars($error); ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <!-- فرم ورود -->
                 <form action="login_action.php" method="POST" class="auth-form space-y-5">
                     <div>
@@ -85,6 +118,13 @@
                         `;
             }
         });
+
+        // تمرکز روی اولین فیلد اگر خطا وجود داشته باشد
+        <?php if ($error): ?>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('login-username').focus();
+            });
+        <?php endif; ?>
     </script>
 </body>
 

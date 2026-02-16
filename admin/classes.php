@@ -21,6 +21,7 @@ if ($search) {
 }
 
 $result = $conn->query($sql);
+$i = 1;
 ?>
 
 <!doctype html>
@@ -30,7 +31,7 @@ $result = $conn->query($sql);
     <meta charset="utf-8">
     <title>لیست کلاس‌ها</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -52,7 +53,7 @@ $result = $conn->query($sql);
     </style>
 </head>
 
-<body class="min-h-full bg-gray-100"> 
+<body class="min-h-full bg-gray-100">
     <!-- Mobile Menu Button -->
     <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
@@ -137,7 +138,7 @@ $result = $conn->query($sql);
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -152,18 +153,44 @@ $result = $conn->query($sql);
     <!-- Main Content -->
     <div class="min-h-screen lg:mr-64">
         <div class="p-4 sm:p-6 lg:p-8">
-            <div class="w-full"><!-- Header -->
+            <div class="w-full">
+                <!-- Header -->
                 <div class="mb-6">
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">لیست کلاس‌ها</h1>
                     <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
-                </div><!-- Main Card -->
+                </div>
+                <!-- Main Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                    <div class="p-4 sm:p-6"><!-- Action Bar -->
+                    <div class="p-4 sm:p-6">
+                        <!-- Action Bar -->
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                            <h2 class="text-lg sm:text-xl font-semibold text-gray-900">مدیریت کلاس‌ها</h2><a href="class_add.php" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center text-sm sm:text-base"> افزودن کلاس جدید </a>
-                        </div><!-- Search Form -->
-                        <form method="GET" class="mb-6 flex flex-col sm:flex-row gap-3"><input type="text" name="search" placeholder="جستجو بر اساس نام کلاس ..." value="<?= htmlspecialchars($search) ?>" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm sm:text-base"> <button type="submit" class="px-6 py-2.5 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm sm:text-base">جستجو</button>
-                        </form><!-- Table Container -->
+                            <h2 class="text-lg sm:text-xl font-semibold text-gray-900">مدیریت کلاس‌ها</h2>
+                            <a href="class_add.php" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-center text-sm sm:text-base"> افزودن کلاس جدید </a>
+                        </div>
+                        <?php if (isset($_GET['success'])): ?>
+                            <div class="mb-4 p-3 rounded-lg bg-green-100 border border-green-400 text-green-700">
+                                <?php
+                                $msg = [
+                                    1 => 'کلاس با موفقیت اضافه شد.',
+                                    2 => 'کلاس با موفقیت ویرایش شد.',
+                                    3 => 'کلاس با موفقیت حذف شد.'
+                                ];
+                                echo $msg[$_GET['success']] ?? 'عملیات موفقیت‌آمیز بود.';
+                                ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (isset($_GET['error']) && $_GET['error'] == 1): ?>
+                            <div class="mb-4 p-3 rounded-lg bg-red-100 border border-red-400 text-red-700">
+                                 امکان حذف کلاس وجود ندارد. ابتدا دانش‌آموزان این کلاس را حذف کنید.
+                            </div>
+                        <?php endif; ?>
+                        <!-- Search Form -->
+                        <form method="GET" class="mb-6 flex flex-col sm:flex-row gap-3">
+                            <input type="text" name="search" placeholder="جستجو بر اساس نام کلاس ..." value="<?= htmlspecialchars($search) ?>" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm sm:text-base">
+                            <button type="submit" class="px-6 py-2.5 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm sm:text-base">جستجو</button>
+                        </form>
+                        <!-- Table Container -->
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-gray-50 border-b-2 border-gray-200">
@@ -179,7 +206,7 @@ $result = $conn->query($sql);
                                         <?php while ($row = $result->fetch_assoc()): ?>
                                             <tr class="hover:bg-gray-50 transition-colors duration-150">
                                                 <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap">
-                                                    <?= $row['id'] ?>
+                                                    <?= $i  ?>
                                                 </td>
 
                                                 <td class="px-4 py-3 text-xs sm:text-sm whitespace-nowrap">
@@ -210,7 +237,9 @@ $result = $conn->query($sql);
                                                     </div>
                                                 </td>
                                             </tr>
-                                        <?php endwhile; ?>
+                                        <?php 
+                                    $i+=1;
+                                    endwhile; ?>
                                     <?php else: ?>
                                         <tr>
                                             <td colspan="4"
@@ -224,7 +253,8 @@ $result = $conn->query($sql);
                             </table>
                         </div>
                     </div>
-                </div><!-- Info Box -->
+                </div>
+                <!-- Info Box -->
                 <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p class="text-blue-800 text-xs sm:text-sm">💡 با کلیک روی نام هر کلاس، می‌توانید دانش‌آموزان آن کلاس را مشاهده کنید.</p>
                 </div>

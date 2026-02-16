@@ -2,13 +2,11 @@
 session_start();
 require_once '../config.php';
 
-// فقط مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: /attendance-system/login.php");
+    header("Location: /login.php");
     exit;
 }
 
-// حذف دبیر
 if (isset($_GET['delete_id'])) {
     $id = intval($_GET['delete_id']);
     $del = $conn->prepare("DELETE FROM users WHERE id = ? AND role = 'teacher'");
@@ -20,12 +18,11 @@ if (isset($_GET['delete_id'])) {
     exit;
 }
 
-// پیام فلش
 $msg = $_SESSION['msg'] ?? '';
 unset($_SESSION['msg']);
 
-// گرفتن لیست دبیران
 $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM users WHERE role='teacher' ORDER BY id DESC");
+$i=1;
 ?>
 
 <!doctype html>
@@ -33,9 +30,9 @@ $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM
 
 <head>
     <meta charset="utf-8">
-    <title>لیست دبیران - سامانه حضور غیاب هنرستان سپهری راد</title>
+    <title>لیست دبیران</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -151,7 +148,7 @@ $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -202,7 +199,7 @@ $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM
                                 <tbody class="divide-y divide-gray-200">
                                     <?php while ($row = $res->fetch_assoc()): ?>
                                         <tr class="hover:bg-gray-50 transition-colors duration-150" id="row-<?= $row['id'] ?>">
-                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap"><?= htmlspecialchars($row['id']) ?></td>
+                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap"><?= htmlspecialchars($i) ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap"><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap"><?= htmlspecialchars($row['username']) ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-500 whitespace-nowrap hidden sm:table-cell"><?= htmlspecialchars($row['created_at']) ?></td>
@@ -229,7 +226,9 @@ $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM
                                                 </div>
                                             </td>
                                         </tr>
-                                    <?php endwhile; ?>
+                                    <?php
+                                $i+=1;
+                                endwhile; ?>
                                 </tbody>
                             </table>
                         </div>

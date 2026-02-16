@@ -14,7 +14,6 @@ if (!isset($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// حذف برنامه
 $sql = "DELETE FROM programs WHERE id=$id";
 
 if ($conn->query($sql)) {

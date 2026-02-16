@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
@@ -13,10 +12,8 @@ $first_name = $_SESSION['first_name'] ?? 'مدیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// دریافت تاریخ امروز
 $today = date('Y-m-d');
 
-// ---------- دریافت غایبین امروز ----------
 $stmt = $conn->prepare("
     SELECT DISTINCT
         CONCAT(s.first_name, ' ', s.last_name) as name,
@@ -37,14 +34,12 @@ $result = $stmt->get_result();
 $recipients = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// آمار
 $total_recipients = count($recipients);
 
-// متن پیش‌فرض پیامک
-$default_message = "والد محترم
-دانش‌آموز {name} کلاس {class} امروز {date} غایب بود.
+$default_message = "والدین محترم
+دانش‌آموز {name} کلاس {class} امروز {date} غایب است.
 هنرستان سپهری راد";
-// تاریخ شمسی
+
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -72,7 +67,6 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// آرایه روزهای هفته فارسی
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -91,9 +85,9 @@ $today_persian = $weekdays_persian[$weekday_number];
 
 <head>
     <meta charset="utf-8">
-    <title>ارسال پیامک - سامانه حضور غیاب هنرستان سپهری راد</title>
+    <title>ارسال پیامک</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -227,7 +221,7 @@ $today_persian = $weekdays_persian[$weekday_number];
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -258,12 +252,12 @@ $today_persian = $weekdays_persian[$weekday_number];
                     <!-- Total Recipients Card -->
                     <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/30 px-2 py-1 rounded-full">
                                 قابل ارسال
                             </div>
                         </div>
@@ -272,30 +266,30 @@ $today_persian = $weekdays_persian[$weekday_number];
                     </div>
 
                     <!-- Message Length Card -->
-                    <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                            </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
-                                حداکثر
-                            </div>
-                        </div>
-                        <h3 class="text-3xl font-bold mb-1">160</h3>
-                        <p class="text-blue-100 text-sm">کاراکتر مجاز</p>
-                    </div>
+                    <!--<div class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">-->
+                    <!--    <div class="flex items-center justify-between mb-4">-->
+                    <!--        <div class="p-3 bg-white bg-opacity-20 rounded-lg">-->
+                    <!--            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">-->
+                    <!--                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>-->
+                    <!--            </svg>-->
+                    <!--        </div>-->
+                    <!--        <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">-->
+                    <!--            حداکثر-->
+                    <!--        </div>-->
+                    <!--    </div>-->
+                    <!--    <h3 class="text-3xl font-bold mb-1">160</h3>-->
+                    <!--    <p class="text-blue-100 text-sm">کاراکتر مجاز</p>-->
+                    <!--</div>-->
 
                     <!-- Date Card -->
                     <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/30 px-2 py-1 rounded-full">
                                 امروز
                             </div>
                         </div>
@@ -455,7 +449,7 @@ $today_persian = $weekdays_persian[$weekday_number];
                         </div>
                     </div>
                 <?php else: ?>
-                    <!-- حالت بدون گیرنده -->
+
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
                         <div class="text-green-500 text-6xl mb-4">
                             <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewbox="0 0 24 24">
@@ -464,7 +458,7 @@ $today_persian = $weekdays_persian[$weekday_number];
                         </div>
                         <h3 class="text-xl font-bold text-gray-700 mb-3">هیچ غایبی وجود ندارد!</h3>
                         <p class="text-gray-600 mb-6">امروز هیچ دانش‌آموزی غایب نبوده است.</p>
-                        <div class="space-x-4">
+                        <div class="space-x-4 space-y-4">
                             <a href="today_absent.php"
                                 class="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                 مشاهده غایبین
@@ -499,21 +493,14 @@ $today_persian = $weekdays_persian[$weekday_number];
             overlay.classList.toggle('hidden');
         }
 
-        // شمارش کاراکترها
         function updateCharCount(textarea) {
             const text = textarea.value;
 
-            // شمارش کاراکترهای فارسی به درستی
             let charCount = 0;
             for (let i = 0; i < text.length; i++) {
                 const charCode = text.charCodeAt(i);
-                // کاراکترهای فارسی معمولاً بین 0x0600 تا 0x06FF هستند
-                // همچنین کاراکترهای عادی انگلیسی و ...
                 charCount++;
             }
-
-            // یا ساده‌تر:
-            // charCount = text.length;
 
             const charCountElement = document.getElementById('charCount');
             charCountElement.textContent = `${text.length}/160 کاراکتر`;
@@ -532,7 +519,6 @@ $today_persian = $weekdays_persian[$weekday_number];
             return text.length;
         }
 
-        // بازنشانی متن
         function resetMessage() {
             const defaultMessage = `والد محترم، سلام
 دانش‌آموز {name} در کلاس {class} امروز {date} غایب بوده است.
@@ -542,11 +528,9 @@ $today_persian = $weekdays_persian[$weekday_number];
             document.getElementById('message').value = defaultMessage;
             updateCharCount(document.getElementById('message'));
 
-            // مخفی کردن پیش‌نمایش
             document.getElementById('previewBox').classList.add('hidden');
         }
 
-        // نمایش پیش‌نمایش
         function showPreview() {
             const message = document.getElementById('message').value;
             const previewContent = message
@@ -558,7 +542,6 @@ $today_persian = $weekdays_persian[$weekday_number];
             document.getElementById('previewBox').classList.remove('hidden');
         }
 
-        // اعتبارسنجی فرم
         document.getElementById('smsForm').addEventListener('submit', function(e) {
             const message = this.message.value.trim();
             const charCount = message.length;
@@ -582,7 +565,6 @@ $today_persian = $weekdays_persian[$weekday_number];
                 return;
             }
 
-            // نمایش لودینگ
             const submitBtn = this.querySelector('button[type="submit"]');
             submitBtn.innerHTML = `
         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -593,7 +575,6 @@ $today_persian = $weekdays_persian[$weekday_number];
     `;
             submitBtn.disabled = true;
 
-            // تأیید نهایی
             if (!confirm(`آیا از ارسال پیامک به ${totalRecipients} نفر اطمینان دارید؟`)) {
                 e.preventDefault();
                 submitBtn.innerHTML = `
@@ -606,7 +587,6 @@ $today_persian = $weekdays_persian[$weekday_number];
             }
         });
 
-        // آپدیت اولیه شمارش
         document.addEventListener('DOMContentLoaded', function() {
             const textarea = document.querySelector('textarea[name="message"]');
             updateCharCount(textarea);

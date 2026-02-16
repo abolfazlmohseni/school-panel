@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود دبیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -13,7 +12,6 @@ $first_name = $_SESSION['first_name'] ?? 'دبیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// آرایه روزهای هفته فارسی
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -24,7 +22,6 @@ $weekdays_persian = [
     6 => 'شنبه'
 ];
 
-// تاریخ امروز به شمسی
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -53,11 +50,9 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// نام روز امروز
 $weekday_number = date('w');
 $today_persian = $weekdays_persian[$weekday_number];
 
-// ---------- دریافت کلاس‌های امروز ----------
 $stmt = $conn->prepare("
     SELECT 
         p.id as program_id,
@@ -96,11 +91,9 @@ $result = $stmt->get_result();
 $today_classes = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// ---------- بررسی آیا امروز تعطیل است ----------
 $is_holiday = count($today_classes) === 0;
 $next_class = null;
 
-// اگر امروز کلاسی نیست، اولین کلاس بعدی را پیدا کن
 if ($is_holiday) {
     $stmt = $conn->prepare("
         SELECT 
@@ -133,7 +126,6 @@ if ($is_holiday) {
     $stmt->close();
 }
 
-// ---------- آمار امروز ----------
 $total_students_today = 0;
 $total_present_today = 0;
 
@@ -152,20 +144,13 @@ $attendance_rate_today = $total_students_today > 0
 
 <head>
     <meta charset="utf-8">
-    <title>کلاس‌های امروز - سامانه حضور غیاب</title>
+    <title>کلاس‌های امروز</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
         }
-
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-
-        * {
-            font-family: 'Vazirmatn', sans-serif;
-        }
-
         .sidebar {
             transition: transform 0.3s ease-in-out;
         }
@@ -242,15 +227,15 @@ $attendance_rate_today = $total_students_today > 0
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden"></div>
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col">
             <!-- Logo & User Info -->
-            <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
+           <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-3">هنرستان سپهری راد</h1>
-                <div class="flex items-center gap-3 bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="flex items-center gap-3 bg-white/20 rounded-lg p-3">
                     <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
                         <?php echo mb_substr($first_name, 0, 1, 'UTF-8') . mb_substr($last_name, 0, 1, 'UTF-8'); ?>
                     </div>
@@ -341,20 +326,20 @@ $attendance_rate_today = $total_students_today > 0
                     <!-- صفحه تعطیل -->
                     <div class="holiday-bg rounded-xl shadow-lg overflow-hidden mb-8">
                         <div class="p-12 text-center text-white">
-                            <div class="text-6xl mb-6">🎉</div>
+                           
                             <h2 class="text-3xl font-bold mb-4">امروز تعطیل هستید!</h2>
                             <p class="text-xl opacity-90 mb-8">هیچ کلاسی برای امروز برنامه‌ریزی نشده است.</p>
 
                             <?php if ($next_class): ?>
-                                <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-6 inline-block">
+                                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 inline-block">
                                     <div class="text-lg font-medium mb-2">اولین کلاس بعدی:</div>
                                     <div class="text-2xl font-bold mb-2"><?php echo htmlspecialchars($next_class['class_name']); ?></div>
-                                    <div class="flex items-center justify-center space-x-4 space-x-reverse">
-                                        <div class="bg-white bg-opacity-30 px-4 py-2 rounded-lg">
-                                            📅 <?php echo $next_class['day_of_week']; ?>
+                                    <div class="flex items-center justify-center space-x-4 gap-2 space-x-reverse">
+                                        <div class="bg-white/30 px-4 py-2 rounded-lg">
+                                             <?php echo $next_class['day_of_week']; ?>
                                         </div>
-                                        <div class="bg-white bg-opacity-30 px-4 py-2 rounded-lg">
-                                            ⏰ زنگ <?php echo $next_class['schedule']; ?>
+                                        <div class="bg-white/30 px-4 py-2 rounded-lg">
+                                            <?php echo $next_class['schedule']; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -517,10 +502,9 @@ $attendance_rate_today = $total_students_today > 0
             overlay.classList.toggle('hidden');
         }
 
-        // رفرش خودکار صفحه هر 5 دقیقه
         setTimeout(function() {
             location.reload();
-        }, 5 * 60 * 1000); // 5 دقیقه
+        }, 5 * 60 * 1000); 
     </script>
 </body>
 

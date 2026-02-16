@@ -8,8 +8,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 }
 
 // لیست کلاس‌ها و دبیران برای سلکت‌باکس
-$classes_result = $conn->query("SELECT id, name FROM classes");
-$teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHERE role='teacher'");
+$classes_result = $conn->query("SELECT id, name FROM classes ORDER BY name");
+$teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHERE role='teacher' ORDER BY first_name");
 ?>
 
 <!doctype html>
@@ -17,10 +17,11 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>افزودن برنامه جدید</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
 </head>
-<script src="https://cdn.tailwindcss.com"></script>
+
 <style>
     body {
         box-sizing: border-box;
@@ -133,7 +134,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -152,22 +153,37 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
 
                 <!-- Header -->
                 <div class="mb-6">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">افزودن برنامه</h1>
-                    <p class="text-gray-600 text-sm sm:text-base">سامانه حضور غیاب هنرستان سپهری راد</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">افزودن برنامه جدید</h1>
+                    <p class="text-gray-600 text-sm sm:text-base">لطفاً اطلاعات زیر را برای ایجاد برنامه زمانی جدید وارد کنید</p>
                 </div>
                 <!-- Main Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6 sm:p-8">
                         <form action="program_add_action.php" method="POST" class="space-y-6">
-                            <!-- Class Selection -->
+                            
+                            <!-- New Class Name Text Field -->
+                            <div>
+                                <label for="class_name_text" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
+                                   نام درس<span class="text-gray-500 text-xs"></span>
+                                </label>
+                                <input type="text" 
+                                       id="class_name_text" 
+                                       name="class_name_text" 
+                                       placeholder="کلاس ریاضی"
+                                       class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                <!-- <p class="mt-1 text-xs text-gray-500">می‌توانید یک نام دلخواه برای این برنامه وارد کنید</p> -->
+                            </div>
+
+                            <!-- Class Selection (still required for relation) -->
                             <div>
                                 <label for="class_id" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
-                                    انتخاب کلاس <span class="text-red-500">*</span>
+                                    انتخاب کلاس از لیست <span class="text-red-500">*</span>
                                 </label>
 
                                 <select id="class_id" name="class_id" required
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
 
+                                    <option value="">انتخاب کلاس</option>
                                     <?php while ($class = $classes_result->fetch_assoc()): ?>
                                         <option value="<?= $class['id'] ?>">
                                             <?= htmlspecialchars($class['name']) ?>
@@ -175,6 +191,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                                     <?php endwhile; ?>
 
                                 </select>
+                                <!-- <p class="mt-1 text-xs text-gray-500">کلاس اصلی را از لیست انتخاب کنید</p> -->
                             </div>
 
                             <!-- Teacher Selection -->
@@ -184,8 +201,9 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                                 </label>
 
                                 <select id="teacher_id" name="teacher_id" required
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
 
+                                    <option value="">انتخاب دبیر</option>
                                     <?php while ($teacher = $teachers_result->fetch_assoc()): ?>
                                         <option value="<?= $teacher['id'] ?>">
                                             <?= htmlspecialchars($teacher['first_name'] . ' ' . $teacher['last_name']) ?>
@@ -193,6 +211,7 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                                     <?php endwhile; ?>
 
                                 </select>
+                                <!-- <p class="mt-1 text-xs text-gray-500">دبیر مربوط به این کلاس را انتخاب کنید</p> -->
                             </div>
 
                             <!-- Day of Week -->
@@ -202,8 +221,9 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                                 </label>
 
                                 <select id="day_of_week" name="day_of_week" required
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
 
+                                    <option value="">انتخاب روز</option>
                                     <?php
                                     $days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
                                     foreach ($days as $day):
@@ -221,32 +241,31 @@ $teachers_result = $conn->query("SELECT id, first_name, last_name FROM users WHE
                                 </label>
 
                                 <select id="schedule" name="schedule" required
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900">
-                                    <option value="1">زنگ اول</option>
-                                    <option value="2">زنگ دوم</option>
-                                    <option value="3">زنگ سوم</option>
-                                    <option value="4">زنگ چهارم</option>
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                    <option value="">انتخاب زنگ</option>
+                                    <option value="زنگ 1">زنگ اول</option>
+                                    <option value="زنگ 2">زنگ دوم</option>
+                                    <option value="زنگ 3">زنگ سوم</option>
+                                    <option value="زنگ 4">زنگ چهارم</option>
                                 </select>
                             </div>
 
                             <!-- Buttons -->
-                            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                            <div class="flex flex-col sm:flex-row gap-3 pt-6">
 
                                 <button type="submit"
-                                    class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700">
+                                    class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
                                     افزودن برنامه
                                 </button>
 
                                 <a href="programs.php"
-                                    class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-center">
+                                    class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-center focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
                                     بازگشت به لیست
                                 </a>
 
                             </div>
 
                         </form>
-
-
                     </div>
                 </div>
 

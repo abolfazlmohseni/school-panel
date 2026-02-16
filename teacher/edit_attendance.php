@@ -5,7 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once '../config.php';
 
-// چک ورود دبیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -13,14 +12,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
 
 $teacher_id = $_SESSION['user_id'];
 
-// دریافت ID حضور و غیاب
 if (!isset($_GET['id'])) {
     die("شناسه حضور و غیاب مشخص نشده است.");
 }
 
 $attendance_id = intval($_GET['id']);
 
-// ---------- دریافت اطلاعات حضور و غیاب ----------
 $stmt = $conn->prepare("
     SELECT 
         a.*,
@@ -48,7 +45,6 @@ if ($result->num_rows === 0) {
 $attendance = $result->fetch_assoc();
 $stmt->close();
 
-// ---------- پردازش فرم ویرایش ----------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_attendance'])) {
     $new_status = $_POST['status'];
 
@@ -70,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_attendance']))
     $update_stmt->close();
 }
 
-// تبدیل تاریخ به شمسی
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -105,14 +100,7 @@ $formatted_date = $jalali_date[0] . '/' . sprintf('%02d', $jalali_date[1]) . '/'
 <head>
     <meta charset="UTF-8">
     <title>ویرایش حضور و غیاب</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="../styles/output.css">
 </head>
 
 <body class="bg-gray-50">
@@ -219,12 +207,12 @@ $formatted_date = $jalali_date[0] . '/' . sprintf('%02d', $jalali_date[1]) . '/'
                 <div class="flex justify-between items-center pt-6 border-t border-gray-100">
                     <button type="submit" name="update_attendance"
                         class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-                        💾 ذخیره تغییرات
+                        ذخیره تغییرات
                     </button>
 
                     <a href="attendance.php?program_id=<?php echo $attendance['program_id']; ?>"
                         class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">
-                        📝 بازگشت به ثبت حضور
+                        بازگشت به ثبت حضور
                     </a>
                 </div>
             </form>

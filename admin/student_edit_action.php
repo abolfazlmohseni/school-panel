@@ -19,7 +19,6 @@ $national_code = $conn->real_escape_string($_POST['national_code']);
 $phone = $conn->real_escape_string($_POST['phone']);
 $class_id = intval($_POST['class_id']);
 
-// چک کردن تکراری بودن کدملی (به جز خودش)
 $check_sql = "SELECT id FROM students WHERE national_code='$national_code' AND id != $id LIMIT 1";
 $result = $conn->query($check_sql);
 if ($result->num_rows > 0) {

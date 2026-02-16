@@ -2,7 +2,6 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود دبیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -13,11 +12,9 @@ $first_name = $_SESSION['first_name'] ?? 'دبیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// فیلترهای جستجو
 $class_filter = $_GET['class_id'] ?? '';
 $student_filter = $_GET['student_name'] ?? '';
 
-// ---------- دریافت کلاس‌های دبیر ----------
 $stmt = $conn->prepare("
     SELECT DISTINCT c.id, c.name 
     FROM programs p
@@ -31,7 +28,6 @@ $result = $stmt->get_result();
 $teacher_classes = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// ---------- دریافت تاریخچه حضور و غیاب ----------
 $query = "
     SELECT 
         a.id,
@@ -54,7 +50,6 @@ $query = "
 $params = [$teacher_id];
 $types = "i";
 
-// اضافه کردن فیلترها
 if (!empty($class_filter)) {
     $query .= " AND c.id = ?";
     $params[] = $class_filter;
@@ -82,7 +77,6 @@ $result = $stmt->get_result();
 $attendance_history = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// آمار
 $total_records = count($attendance_history);
 $present_count = 0;
 $absent_count = 0;
@@ -97,7 +91,6 @@ foreach ($attendance_history as $record) {
 
 $attendance_rate = $total_records > 0 ? round(($present_count / $total_records) * 100, 1) : 0;
 
-// تابع تبدیل تاریخ
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -127,18 +120,12 @@ function gregorian_to_jalali($gy, $gm, $gd)
 
 <head>
     <meta charset="utf-8">
-    <title>تاریخچه حضور و غیاب - سامانه حضور غیاب</title>
+    <title>تاریخچه حضور و غیاب</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
-        }
-
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-
-        * {
-            font-family: 'Vazirmatn', sans-serif;
         }
 
         .sidebar {
@@ -203,7 +190,7 @@ function gregorian_to_jalali($gy, $gm, $gd)
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden"></div>
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
@@ -211,7 +198,7 @@ function gregorian_to_jalali($gy, $gm, $gd)
             <!-- Logo & User Info -->
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
                 <h1 class="text-xl font-bold text-white mb-3">هنرستان سپهری راد</h1>
-                <div class="flex items-center gap-3 bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="flex items-center gap-3 bg-white/20 rounded-lg p-3">
                     <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
                         <?php echo mb_substr($first_name, 0, 1, 'UTF-8') . mb_substr($last_name, 0, 1, 'UTF-8'); ?>
                     </div>
@@ -298,11 +285,9 @@ function gregorian_to_jalali($gy, $gm, $gd)
                         <span class="text-blue-600 font-medium">نمایش و مدیریت سوابق حضور و غیاب</span>
                     </p>
                 </div>
-                <!-- فیلترها -->
                 <div class="bg-white rounded-xl shadow-lg p-6 mb-8 filter-card">
                     <h2 class="text-xl font-bold text-gray-900 mb-4">فیلترها</h2>
                     <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <!-- فیلتر کلاس -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">کلاس</label>
                             <select name="class_id" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
@@ -316,7 +301,6 @@ function gregorian_to_jalali($gy, $gm, $gd)
                             </select>
                         </div>
 
-                        <!-- فیلتر دانش‌آموز -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">نام دانش‌آموز</label>
                             <input type="text" name="student_name" value="<?php echo htmlspecialchars($student_filter); ?>"
@@ -324,8 +308,7 @@ function gregorian_to_jalali($gy, $gm, $gd)
                                 class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
 
-                        <!-- دکمه‌های فیلتر -->
-                        <div class="flex items-end space-x-3 space-x-reverse">
+                        <div class="flex items-end space-x-3 gap-3 space-x-reverse">
                             <button type="submit"
                                 class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium w-full">
                                 اعمال فیلتر
@@ -350,7 +333,6 @@ function gregorian_to_jalali($gy, $gm, $gd)
                         </div>
                     </div>
 
-                    <!-- بدنه جدول -->
                     <?php if ($total_records > 0): ?>
                         <div class="overflow-x-auto">
                             <table class="w-full">
@@ -458,7 +440,7 @@ function gregorian_to_jalali($gy, $gm, $gd)
                             <div class="space-x-4">
                                 <a href="dashboard.php"
                                     class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-                                    📝 ثبت اولین حضور و غیاب
+                                    ثبت اولین حضور و غیاب
                                 </a>
                                 <a href="attendance_history.php"
                                     class="inline-block px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">

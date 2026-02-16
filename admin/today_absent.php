@@ -2,13 +2,11 @@
 session_start();
 require_once '../config.php';
 
-// چک ورود مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
 }
 
-// در send_sms.php بعد از session_start()
 $error = '';
 if (isset($_SESSION['sms_error'])) {
     $error = $_SESSION['sms_error'];
@@ -20,10 +18,8 @@ $first_name = $_SESSION['first_name'] ?? 'مدیر';
 $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
-// تاریخ امروز
 $today = date('Y-m-d');
 
-// ---------- دریافت غایبین امروز ----------
 $query = "
     SELECT 
         a.id,
@@ -53,10 +49,8 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// ---------- آمار ----------
 $total_absent = count($absent_today);
 
-// شمارش دانش‌آموزانی که شماره تلفن دارند
 $with_phone = 0;
 foreach ($absent_today as $student) {
     if (!empty($student['phone'])) {
@@ -64,7 +58,6 @@ foreach ($absent_today as $student) {
     }
 }
 
-// ---------- تاریخ شمسی ----------
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
@@ -92,7 +85,6 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-// آرایه روزهای هفته فارسی
 $weekdays_persian = [
     0 => 'یکشنبه',
     1 => 'دوشنبه',
@@ -112,9 +104,9 @@ $today_persian = $weekdays_persian[$weekday_number];
 
 <head>
     <meta charset="utf-8">
-    <title>غایبین امروز - سامانه حضور غیاب هنرستان سپهری راد</title>
+    <title>غایبین امروز</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/output.css">
     <style>
         body {
             box-sizing: border-box;
@@ -239,7 +231,7 @@ $today_persian = $weekdays_persian[$weekday_number];
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/attendance-system/logout.php"
+                <a href="/logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -263,7 +255,6 @@ $today_persian = $weekdays_persian[$weekday_number];
                         <span class="text-blue-600 font-medium">امروز <?php echo $today_persian; ?> <?php echo $today_jalali_formatted; ?> </span>
                     </p>
                 </div>
-                <!-- بعد از هدر در send_sms.php -->
                 <?php if (!empty($error)): ?>
                     <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                         <div class="flex items-center">
@@ -279,12 +270,12 @@ $today_persian = $weekdays_persian[$weekday_number];
                     <!-- Total Absent Card -->
                     <div class="stat-card bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/30 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
                                 امروز
                             </div>
                         </div>
@@ -294,18 +285,17 @@ $today_persian = $weekdays_persian[$weekday_number];
                     <!-- کلاس‌های دارای غایب Card -->
                     <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                            <div class="p-3 bg-white/30 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                 </svg>
                             </div>
-                            <div class="text-xs bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
                                 کلاس‌های مختلف
                             </div>
                         </div>
                         <h3 class="text-3xl font-bold mb-1">
                             <?php
-                            // شمارش کلاس‌های منحصر به فرد
                             $unique_classes = [];
                             foreach ($absent_today as $student) {
                                 if (!empty($student['class_name'])) {
@@ -319,7 +309,6 @@ $today_persian = $weekdays_persian[$weekday_number];
                     </div>
                 </div>
 
-                <!-- Main Card - لیست غایبین -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
                     <div class="p-4 sm:p-6">
                         <!-- Action Bar -->
@@ -383,27 +372,6 @@ $today_persian = $weekdays_persian[$weekday_number];
                                                         <span class="text-gray-400">ندارد</span>
                                                     <?php endif; ?>
                                                 </td>
-
-                                                <!-- <td class="px-4 py-3 text-center whitespace-nowrap">
-                                                    <div class="flex gap-2 justify-center flex-wrap">
-                                                        <?php if (!empty($student['phone'])): ?>
-                                                            <a href="send_sms.php?phone=<?= urlencode($student['phone']) ?>&name=<?= urlencode($student['first_name'] . ' ' . $student['last_name']) ?>"
-                                                                class="px-3 py-1.5 bg-green-500 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-green-600 transition-colors duration-200">
-                                                                ارسال پیامک
-                                                            </a>
-                                                        <?php endif; ?>
-
-                                                        <a href="student_details.php?id=<?= $student['id'] ?>"
-                                                            class="px-3 py-1.5 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors duration-200">
-                                                            جزئیات
-                                                        </a>
-
-                                                        <a href="student_edit.php?id=<?= $student['id'] ?>"
-                                                            class="px-3 py-1.5 bg-yellow-500 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-yellow-600 transition-colors duration-200">
-                                                            ویرایش
-                                                        </a>
-                                                    </div>
-                                                </td> -->
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
@@ -444,7 +412,7 @@ $today_persian = $weekdays_persian[$weekday_number];
                 <div class="mt-8">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">دسترسی سریع</h3>
                     <div class="grid grid-cols-1  gap-4">
-            
+
 
                         <!-- Edit Students -->
                         <a href="students.php" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-orange-500 transition-all">
@@ -475,14 +443,11 @@ $today_persian = $weekdays_persian[$weekday_number];
             overlay.classList.toggle('hidden');
         }
 
-        // تابع خروجی اکسل
         function exportToExcel() {
-            // ایجاد یک جدول موقت برای خروجی
             const table = document.createElement('table');
             const header = table.createTHead();
             const headerRow = header.insertRow();
 
-            // اضافه کردن هدرها
             const headers = ['ردیف', 'نام و نام خانوادگی', 'کد ملی', 'کلاس', 'شماره تماس', 'وضعیت'];
             headers.forEach(headerText => {
                 const th = document.createElement('th');
@@ -490,7 +455,6 @@ $today_persian = $weekdays_persian[$weekday_number];
                 headerRow.appendChild(th);
             });
 
-            // اضافه کردن داده‌ها
             const tbody = table.createTBody();
             <?php foreach ($absent_today as $index => $student): ?>
                 const row = tbody.insertRow();
@@ -509,7 +473,6 @@ $today_persian = $weekdays_persian[$weekday_number];
                 });
             <?php endforeach; ?>
 
-            // تبدیل به CSV
             let csv = [];
             const rows = table.querySelectorAll('tr');
 
@@ -534,7 +497,6 @@ $today_persian = $weekdays_persian[$weekday_number];
             alert('فایل اکسل با موفقیت دانلود شد.');
         }
 
-        // آپدیت خودکار هر 5 دقیقه
         setTimeout(function() {
             location.reload();
         }, 5 * 60 * 1000);
