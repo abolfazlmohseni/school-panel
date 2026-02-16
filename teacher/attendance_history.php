@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
@@ -308,7 +308,11 @@ function gregorian_to_jalali($gy, $gm, $gd)
                                 class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
 
+<<<<<<< HEAD
                         <div class="flex items-end space-x-3 gap-3 space-x-reverse">
+=======
+                        <div class="flex items-end space-x-3 space-x-reverse">
+>>>>>>> 1b2aef95b042de967ecedab67681b3a8a20d936a
                             <button type="submit"
                                 class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium w-full">
                                 اعمال فیلتر

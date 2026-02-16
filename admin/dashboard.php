@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
@@ -408,7 +408,6 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                     </path>
                                 </svg>
                             </div>
-
                         </div>
                         <h3 class="text-3xl font-bold mb-1"><?php echo $total_teachers; ?></h3>
                         <p class="text-purple-100 text-sm">تعداد دبیران</p>

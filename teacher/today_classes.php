@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config.php';
+require_once '../../user/config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
@@ -334,12 +334,21 @@ $attendance_rate_today = $total_students_today > 0
                                 <div class="bg-white/20 backdrop-blur-sm rounded-xl p-6 inline-block">
                                     <div class="text-lg font-medium mb-2">اولین کلاس بعدی:</div>
                                     <div class="text-2xl font-bold mb-2"><?php echo htmlspecialchars($next_class['class_name']); ?></div>
+<<<<<<< HEAD
                                     <div class="flex items-center justify-center space-x-4 gap-2 space-x-reverse">
                                         <div class="bg-white/30 px-4 py-2 rounded-lg">
                                              <?php echo $next_class['day_of_week']; ?>
                                         </div>
                                         <div class="bg-white/30 px-4 py-2 rounded-lg">
                                             <?php echo $next_class['schedule']; ?>
+=======
+                                    <div class="flex items-center justify-center space-x-4 space-x-reverse">
+                                        <div class="bg-white/30 px-4 py-2 rounded-lg">
+                                            📅 <?php echo $next_class['day_of_week']; ?>
+                                        </div>
+                                        <div class="bg-white/30 px-4 py-2 rounded-lg">
+                                            ⏰ زنگ <?php echo $next_class['schedule']; ?>
+>>>>>>> 1b2aef95b042de967ecedab67681b3a8a20d936a
                                         </div>
                                     </div>
                                 </div>
