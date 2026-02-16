@@ -11,6 +11,10 @@ require_once '../../user/config.php';
 $smsir_api_key = "rtAYYqugrjYU9Ut3d4HCGVBq7YRTWTjxGTB72TMEd3UOEtYk"; // کلید API شما
 $smsir_line_number = "300021151796"; // شماره خط شما
 
+// تنظیمات SMS.ir
+$smsir_api_key = "rtAYYqugrjYU9Ut3d4HCGVBq7YRTWTjxGTB72TMEd3UOEtYk"; // کلید API شما
+$smsir_line_number = "300021151796"; // شماره خط شما
+
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     $_SESSION['error'] = 'لطفاً ابتدا وارد شوید';
     header("Location: ../login.php");

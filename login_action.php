@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../user/config.php';
+require_once './config.php';
 
 // پاک کردن ارورهای قبلی
 unset($_SESSION['login_error']);

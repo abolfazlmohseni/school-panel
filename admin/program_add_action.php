@@ -16,9 +16,10 @@ $class_id = intval($_POST['class_id']);
 $teacher_id = intval($_POST['teacher_id']);
 $day_of_week = $conn->real_escape_string($_POST['day_of_week']);
 $schedule = $conn->real_escape_string($_POST['schedule']);
+$class_name_text = isset($_POST['class_name_text']) ? $conn->real_escape_string($_POST['class_name_text']) : '';
 
-$sql = "INSERT INTO programs (class_id, teacher_id, day_of_week, schedule) 
-        VALUES ($class_id, $teacher_id, '$day_of_week', '$schedule')";
+$sql = "INSERT INTO programs (class_id, teacher_id, day_of_week, schedule, class_name_text) 
+        VALUES ($class_id, $teacher_id, '$day_of_week', '$schedule', '$class_name_text')";
 
 if ($conn->query($sql)) {
     header('Location: programs.php');
@@ -26,3 +27,4 @@ if ($conn->query($sql)) {
 } else {
     die("خطا در ذخیره برنامه: " . $conn->error);
 }
+?>

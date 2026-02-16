@@ -299,14 +299,20 @@ foreach ($students as $student) {
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">ثبت حضور و غیاب</h1>
-                        <div class="mt-2 text-gray-600 text-sm sm:text-base">
-                            <span class="font-medium">کلاس:</span> <?php echo htmlspecialchars($class_info['class_name']); ?>
-                            <span class="mx-2">•</span>
-                            <span class="font-medium">روز:</span> <?php echo htmlspecialchars($class_info['day_of_week']); ?>
-                            <span class="mx-2">•</span>
-                            <span class="font-medium">زنگ:</span> <?php echo htmlspecialchars($class_info['schedule']); ?>
-                            <span class="mx-2">•</span>
-                            <span class="font-medium">تاریخ:</span> <?php echo $today_jalali_formatted; ?>
+                        <div class="mt-2 text-gray-600 text-sm sm:text-base flex flex-col gap-2">
+                            <div>
+                                <span class="font-medium">کلاس:</span> <?php echo htmlspecialchars($class_info['class_name']); ?>
+                            </div>
+                            <div>
+                                <span class="font-medium">روز:</span> <?php echo htmlspecialchars($class_info['day_of_week']); ?>
+                            </div>
+                            <div>
+                                <span class="font-medium">زنگ:</span> <?php echo htmlspecialchars($class_info['schedule']); ?>
+                            </div>
+                            <div>
+                                <span class="font-medium">تاریخ:</span> <?php echo $today_jalali_formatted; ?>
+                            </div>
+                            
                         </div>
                     </div>
                     <div>
@@ -334,12 +340,12 @@ foreach ($students as $student) {
                 <!-- نوار اطلاعات -->
                 <div class="bg-blue-50 p-4 border-b border-blue-100">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div class="flex items-center space-x-4 space-x-reverse">
-                            <div class="flex items-center">
+                        <div class="flex items-center space-x-4  space-x-reverse">
+                            <div class="flex items-center gap-2">
                                 <div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
                                 <span class="text-sm">حاضر</span>
                             </div>
-                            <div class="flex items-center">
+                            <div class="flex items-center gap-2">
                                 <div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
                                 <span class="text-sm">غایب</span>
                             </div>
@@ -366,7 +372,7 @@ foreach ($students as $student) {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex space-x-2 space-x-reverse w-full sm:w-auto justify-end">
+                                <div class="flex space-x-2 gap-2 space-x-reverse w-full sm:w-auto justify-end">
                                     <!-- گزینه حاضر -->
                                     <div class="relative">
                                         <input type="radio"

@@ -1,6 +1,6 @@
 <?php
 // tools/create_admin.php
-require_once __DIR__ . '../../../user/config.php';
+require_once __DIR__ . '../../config.php';
 
 // تنظیمات: نام کاربری و پسوردی که میخوای بذاری
 $username = 'SepehriRad';

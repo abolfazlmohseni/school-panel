@@ -17,8 +17,24 @@ unset($_SESSION['msg']);
 unset($_SESSION['warning']);
 unset($_SESSION['error']);
 
-
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+
+// بخش مرتب‌سازی
+$order = isset($_GET['order']) ? $_GET['order'] : 's.id';
+$direction = isset($_GET['dir']) && $_GET['dir'] === 'asc' ? 'asc' : 'desc';
+
+// ستون‌های مجاز برای مرتب‌سازی
+$allowed_columns = [
+    'first_name' => 's.first_name',
+    'last_name' => 's.last_name',
+    'class_name' => 'c.name'
+];
+
+if (array_key_exists($order, $allowed_columns)) {
+    $order_column = $allowed_columns[$order];
+} else {
+    $order_column = 's.id';
+}
 
 $sql = "SELECT s.id, s.first_name, s.last_name, s.national_code, s.phone, c.name AS class_name
         FROM students s
@@ -27,9 +43,10 @@ $sql = "SELECT s.id, s.first_name, s.last_name, s.national_code, s.phone, c.name
            OR s.last_name LIKE '%$search%' 
            OR s.national_code LIKE '%$search%' 
            OR c.name LIKE '%$search%'
-        ORDER BY s.id DESC";
+        ORDER BY $order_column $direction, s.id DESC";
 
 $result = $conn->query($sql);
+$i = 1;
 ?>
 
 
@@ -209,21 +226,42 @@ $result = $conn->query($sql);
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="bg-gray-50 border-b-2 border-gray-200">
-                                <tr>
-                                    <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">#</th>
-                                    <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">نام</th>
-                                    <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">نام خانوادگی</th>
-                                    <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">کد ملی</th>
-                                    <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap hidden md:table-cell">شماره تماس</th>
-                                    <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">کلاس</th>
-                                    <th class="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">اقدامات</th>
-                                </tr>
-                            </thead>
+    <tr>
+        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">#</th>
+        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+            <a href="?search=<?= urlencode($search) ?>&order=first_name&dir=<?= ($order == 'first_name' && $direction == 'asc') ? 'desc' : 'asc' ?>" class="hover:text-green-600 flex items-center gap-1">
+                نام
+                <?php if ($order == 'first_name'): ?>
+                    <span class="text-green-600"><?= $direction == 'asc' ? '↑' : '↓' ?></span>
+                <?php endif; ?>
+            </a>
+        </th>
+        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+            <a href="?search=<?= urlencode($search) ?>&order=last_name&dir=<?= ($order == 'last_name' && $direction == 'asc') ? 'desc' : 'asc' ?>" class="hover:text-green-600 flex items-center gap-1">
+                نام خانوادگی
+                <?php if ($order == 'last_name'): ?>
+                    <span class="text-green-600"><?= $direction == 'asc' ? '↑' : '↓' ?></span>
+                <?php endif; ?>
+            </a>
+        </th>
+        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">کد ملی</th>
+        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap hidden md:table-cell">شماره تماس</th>
+        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+            <a href="?search=<?= urlencode($search) ?>&order=class_name&dir=<?= ($order == 'class_name' && $direction == 'asc') ? 'desc' : 'asc' ?>" class="hover:text-green-600 flex items-center gap-1">
+                کلاس
+                <?php if ($order == 'class_name'): ?>
+                    <span class="text-green-600"><?= $direction == 'asc' ? '↑' : '↓' ?></span>
+                <?php endif; ?>
+            </a>
+        </th>
+        <th class="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">اقدامات</th>
+    </tr>
+</thead>
                             <tbody class="divide-y divide-gray-200">
                                 <?php if ($result->num_rows > 0): ?>
                                     <?php while ($row = $result->fetch_assoc()): ?>
                                         <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap"><?= $row['id'] ?></td>
+                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap"><?= $i ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap"><?= htmlspecialchars($row['first_name']) ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap"><?= htmlspecialchars($row['last_name']) ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap"><?= htmlspecialchars($row['national_code']) ?></td>
@@ -236,7 +274,9 @@ $result = $conn->query($sql);
                                                 </div>
                                             </td>
                                         </tr>
-                                    <?php endwhile; ?>
+                                    <?php 
+                                $i +=1;
+                                endwhile; ?>
                                 <?php else: ?>
                                     <tr>
                                         <td colspan="7" class="text-center px-4 py-8 text-gray-500 text-sm sm:text-base">هیچ دانش‌آموزی پیدا نشد.</td>

@@ -139,20 +139,20 @@ function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
     $gy2 = ($gm > 2) ? ($gy + 1) : $gy;
-    $days = 355666 + (365 * $gy) + ((int)(($gy2 + 3) / 4)) - ((int)(($gy2 + 99) / 100)) + ((int)(($gy2 + 399) / 400)) + $gd + $g_d_m[$gm - 1];
-    $jy = -1595 + (33 * ((int)($days / 12053)));
+    $days = 355666 + (365 * $gy) + ((int) (($gy2 + 3) / 4)) - ((int) (($gy2 + 99) / 100)) + ((int) (($gy2 + 399) / 400)) + $gd + $g_d_m[$gm - 1];
+    $jy = -1595 + (33 * ((int) ($days / 12053)));
     $days %= 12053;
-    $jy += 4 * ((int)($days / 1461));
+    $jy += 4 * ((int) ($days / 1461));
     $days %= 1461;
     if ($days > 365) {
-        $jy += (int)(($days - 1) / 365);
+        $jy += (int) (($days - 1) / 365);
         $days = ($days - 1) % 365;
     }
     if ($days < 186) {
-        $jm = 1 + (int)($days / 31);
+        $jm = 1 + (int) ($days / 31);
         $jd = 1 + ($days % 31);
     } else {
-        $jm = 7 + (int)(($days - 186) / 30);
+        $jm = 7 + (int) (($days - 186) / 30);
         $jd = 1 + (($days - 186) % 30);
     }
     return array($jy, $jm, $jd);
@@ -224,17 +224,20 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
 
 <body class="min-h-full bg-gray-100">
     <!-- Mobile Menu Button -->
-    <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
+    <button onclick="toggleSidebar()"
+        class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden">
+    </div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
+    <aside id="sidebar"
+        class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col">
             <!-- Logo & Title -->
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
@@ -246,57 +249,78 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
             <nav class="flex-1 p-4 overflow-y-auto">
                 <ul class="space-y-2">
                     <li>
-                        <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600  rounded-lg font-medium transition-colors">
+                        <a href="dashboard.php"
+                            class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600  rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                </path>
                             </svg>
                             داشبورد
                         </a>
                     </li>
                     <li>
-                        <a href="teachers.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="teachers.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
                             </svg>
                             بخش دبیران
                         </a>
                     </li>
                     <li>
-                        <a href="classes.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="classes.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                </path>
                             </svg>
                             کلاس ها
                         </a>
                     </li>
                     <li>
-                        <a href="students.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="students.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
                             </svg>
                             دانش آموزان
                         </a>
                     </li>
                     <li>
-                        <a href="programs.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="programs.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
                             </svg>
                             برنامه زمانی
                         </a>
                     </li>
                     <li>
-                        <a href="today_absent.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                        <a href="today_absent.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
                             </svg>
                             غایبین امروز
                         </a>
                     </li>
                     <li>
-                        <a href="send_sms.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                        <a href="send_sms.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
                             </svg>
                             ارسال پیامک
                         </a>
@@ -329,7 +353,8 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">داشبورد مدیریت</h1>
                     <p class="text-gray-600 text-sm sm:text-base">
                         خوش آمدید <?php echo htmlspecialchars($full_name); ?>،
-                        <span class="text-blue-600 font-medium">امروز <?php echo $today_persian; ?> <?php echo $today_jalali_formatted; ?></span>
+                        <span class="text-blue-600 font-medium">امروز <?php echo $today_persian; ?>
+                            <?php echo $today_jalali_formatted; ?></span>
                     </p>
                 </div>
 
@@ -340,7 +365,8 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
                                     </path>
                                 </svg>
                             </div>
@@ -353,11 +379,14 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     </div>
 
                     <!-- Total Classes Card -->
-                    <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
+                    <div
+                        class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                    </path>
                                 </svg>
                             </div>
                             <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
@@ -369,15 +398,15 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     </div>
 
                     <!-- Total Teachers Card -->
-                    <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md p-6 text-white">
+                    <div
+                        class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                    </path>
                                 </svg>
-                            </div>
-                            <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
-                                <?php echo count($active_teachers); ?> فعال
                             </div>
                         </div>
                         <h3 class="text-3xl font-bold mb-1"><?php echo $total_teachers; ?></h3>
@@ -385,11 +414,13 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     </div>
 
                     <!-- Today's Attendance Card -->
-                    <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
+                    <div
+                        class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
                             <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
@@ -407,8 +438,11 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div class="p-6 border-b border-gray-100">
                             <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
+                                    viewbox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
                                 </svg>
                                 کلاس‌های امروز (<?php echo $today_persian; ?>)
                             </h2>
@@ -417,36 +451,50 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                             <?php if (count($today_classes_detail) > 0): ?>
                                 <div class="space-y-4">
                                     <?php foreach ($today_classes_detail as $class): ?>
-                                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                        <div
+                                            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                                                <div
+                                                    class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                                        </path>
                                                     </svg>
                                                 </div>
                                                 <div>
-                                                    <div class="font-medium text-gray-900"><?php echo htmlspecialchars($class['class_name']); ?></div>
+                                                    <div class="font-medium text-gray-900">
+                                                        <?php echo htmlspecialchars($class['class_name']); ?>
+                                                    </div>
                                                     <div class="text-sm text-gray-600">
-                                                        دبیر: <?php echo htmlspecialchars($class['teacher_first_name'] . ' ' . $class['teacher_last_name']); ?>
+                                                        دبیر:
+                                                        <?php echo htmlspecialchars($class['teacher_first_name'] . ' ' . $class['teacher_last_name']); ?>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <div class="font-medium text-gray-900">زنگ <?php echo htmlspecialchars($class['schedule']); ?></div>
-                                                <div class="text-sm text-gray-600"><?php echo $class['student_count']; ?> دانش‌آموز</div>
+                                                <div class="font-medium text-gray-900">زنگ
+                                                    <?php echo htmlspecialchars($class['schedule']); ?>
+                                                </div>
+                                                <div class="text-sm text-gray-600"><?php echo $class['student_count']; ?>
+                                                    دانش‌آموز</div>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
                                 <div class="mt-4 text-center">
-                                    <a href="programs.php?day=<?php echo urlencode($today_persian); ?>" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <!-- <a href="programs.php?day=<?php echo urlencode($today_persian); ?>"
+                                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                                         مشاهده همه کلاس‌های امروز →
-                                    </a>
+                                    </a> -->
                                 </div>
                             <?php else: ?>
                                 <div class="text-center py-8 text-gray-500">
-                                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor"
+                                        viewbox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                        </path>
                                     </svg>
                                     <p>امروز کلاسی برنامه‌ریزی نشده است.</p>
                                 </div>
@@ -458,8 +506,10 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div class="p-6 border-b border-gray-100">
                             <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor"
+                                    viewbox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 آخرین حضور و غیاب‌ها
                             </h2>
@@ -479,11 +529,14 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                                     <div class="font-medium text-sm text-gray-900">
                                                         <?php echo htmlspecialchars($record['student_first_name'] . ' ' . $record['student_last_name']); ?>
                                                     </div>
-                                                    <div class="text-xs text-gray-600"><?php echo htmlspecialchars($record['class_name']); ?></div>
+                                                    <div class="text-xs text-gray-600">
+                                                        <?php echo htmlspecialchars($record['class_name']); ?>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <span class="px-2 py-1 rounded-full text-xs font-medium <?php echo $record['status'] === 'حاضر' ? 'attendance-badge-present' : 'attendance-badge-absent'; ?>">
+                                                <span
+                                                    class="px-2 py-1 rounded-full text-xs font-medium <?php echo $record['status'] === 'حاضر' ? 'attendance-badge-present' : 'attendance-badge-absent'; ?>">
                                                     <?php echo $record['status']; ?>
                                                 </span>
                                                 <div class="text-xs text-gray-500 mt-1">
@@ -493,15 +546,19 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
-                                <div class="mt-4 text-center">
-                                    <a href="attendance_report.php" class="text-green-600 hover:text-green-800 text-sm font-medium">
+                                <!-- <div class="mt-4 text-center">
+                                     <a href="attendance_report.php"
+                                        class="text-green-600 hover:text-green-800 text-sm font-medium">
                                         مشاهده گزارش کامل حضور و غیاب →
-                                    </a>
-                                </div>
+                                    </a> 
+                                </div> -->
                             <?php else: ?>
                                 <div class="text-center py-8 text-gray-500">
-                                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor"
+                                        viewbox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                        </path>
                                     </svg>
                                     <p>هنوز حضور و غیابی ثبت نشده است.</p>
                                 </div>
@@ -515,11 +572,14 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     <h2 class="text-xl font-bold text-gray-900 mb-4">دسترسی سریع</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Add Class -->
-                        <a href="class_add.php" class="quick-action-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-blue-500 transition-all">
+                        <a href="class_add.php"
+                            class="quick-action-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-blue-500 transition-all">
                             <div class="flex items-center gap-4">
                                 <div class="p-3 bg-blue-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
+                                        viewbox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4"></path>
                                     </svg>
                                 </div>
                                 <div>
@@ -530,11 +590,15 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                         </a>
 
                         <!-- Add Student -->
-                        <a href="students_add.php" class="quick-action-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-green-500 transition-all">
+                        <a href="students_add.php"
+                            class="quick-action-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-green-500 transition-all">
                             <div class="flex items-center gap-4">
                                 <div class="p-3 bg-green-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
+                                        viewbox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                                        </path>
                                     </svg>
                                 </div>
                                 <div>
@@ -545,11 +609,15 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                         </a>
 
                         <!-- View Schedule -->
-                        <a href="programs.php" class="quick-action-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-purple-500 transition-all">
+                        <a href="programs.php"
+                            class="quick-action-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-purple-500 transition-all">
                             <div class="flex items-center gap-4">
                                 <div class="p-3 bg-purple-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
+                                        viewbox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
                                     </svg>
                                 </div>
                                 <div>
@@ -560,11 +628,15 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                         </a>
 
                         <!-- View Teachers -->
-                        <a href="teachers.php" class="quick-action-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-orange-500 transition-all">
+                        <a href="teachers.php"
+                            class="quick-action-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-orange-500 transition-all">
                             <div class="flex items-center gap-4">
                                 <div class="p-3 bg-orange-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor"
+                                        viewbox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                        </path>
                                     </svg>
                                 </div>
                                 <div>
@@ -576,14 +648,16 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                     </div>
                 </div>
 
-                <!-- دبیران فعال -->
+                <!-- دبیران  -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="p-6 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
                             <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
                             </svg>
-                            دبیران فعال
+                            دبیران
                         </h2>
                     </div>
                     <div class="p-6">
@@ -591,32 +665,41 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                                 <?php foreach ($active_teachers as $teacher): ?>
                                     <div class="text-center">
-                                        <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full mx-auto mb-3 flex items-center justify-center">
+                                        <div
+                                            class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full mx-auto mb-3 flex items-center justify-center">
                                             <span class="text-xl font-bold text-purple-700">
                                                 <?php echo mb_substr($teacher['first_name'], 0, 1, 'UTF-8') . mb_substr($teacher['last_name'], 0, 1, 'UTF-8'); ?>
                                             </span>
                                         </div>
-                                        <div class="font-medium text-gray-900"><?php echo htmlspecialchars($teacher['first_name']); ?>
+                                        <div class="font-medium text-gray-900">
+                                            <?php echo htmlspecialchars($teacher['first_name']); ?>
                                         </div>
-                                        <div class="text-sm text-gray-600"><?php echo htmlspecialchars($teacher['last_name']); ?>
+                                        <div class="text-sm text-gray-600">
+                                            <?php echo htmlspecialchars($teacher['last_name']); ?>
                                         </div>
-                                        <div class="text-xs text-gray-500 mt-1"><?php echo htmlspecialchars($teacher['username']); ?>
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            <?php echo htmlspecialchars($teacher['username']); ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
                             <div class="mt-6 text-center">
-                                <a href="teachers.php" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition text-sm font-medium">
+                                <a href="teachers.php"
+                                    class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition text-sm font-medium">
                                     مشاهده همه دبیران
                                 </a>
                             </div>
                         <?php else: ?>
                             <div class="text-center py-8 text-gray-500">
-                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor"
+                                    viewbox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                                    </path>
                                 </svg>
                                 <p>هنوز دبیری ثبت نشده است.</p>
-                                <a href="teacher_add.php" class="mt-3 inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                                <a href="teacher_add.php"
+                                    class="mt-3 inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
                                     افزودن اولین دبیر
                                 </a>
                             </div>
@@ -636,7 +719,7 @@ $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali
             overlay.classList.toggle('hidden');
         }
 
-        setTimeout(function() {
+        setTimeout(function () {
             location.reload();
         }, 2 * 60 * 1000);
     </script>

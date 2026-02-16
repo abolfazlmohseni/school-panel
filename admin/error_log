@@ -10,3 +10,14 @@
 (
 )
 
+[15-Feb-2026 07:13:38 UTC] send_sms_process.php شروع شد - POST: Array
+(
+    [message] => والدین محترم
+دانش‌آموز {name} کلاس {class} امروز {date} غایب است.
+هنرستان سپهری راد
+)
+
+[15-Feb-2026 10:43:39 Asia/Tehran] خطا در ذخیره لاگ برای شماره 9057470278: Unknown column 'student_id' in 'INSERT INTO'
+[15-Feb-2026 10:43:39 Asia/Tehran] خطا در ذخیره لاگ برای شماره 9356724189: Unknown column 'student_id' in 'INSERT INTO'
+[15-Feb-2026 10:43:39 Asia/Tehran] خطا در ذخیره لاگ برای شماره 9154223477: Unknown column 'student_id' in 'INSERT INTO'
+[15-Feb-2026 10:43:39 Asia/Tehran] خطا در ذخیره لاگ برای شماره 9154027211: Unknown column 'student_id' in 'INSERT INTO'

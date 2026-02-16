@@ -22,6 +22,7 @@ $msg = $_SESSION['msg'] ?? '';
 unset($_SESSION['msg']);
 
 $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM users WHERE role='teacher' ORDER BY id DESC");
+$i=1;
 ?>
 
 <!doctype html>
@@ -198,7 +199,7 @@ $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM
                                 <tbody class="divide-y divide-gray-200">
                                     <?php while ($row = $res->fetch_assoc()): ?>
                                         <tr class="hover:bg-gray-50 transition-colors duration-150" id="row-<?= $row['id'] ?>">
-                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap"><?= htmlspecialchars($row['id']) ?></td>
+                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap"><?= htmlspecialchars($i) ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap"><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap"><?= htmlspecialchars($row['username']) ?></td>
                                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-500 whitespace-nowrap hidden sm:table-cell"><?= htmlspecialchars($row['created_at']) ?></td>
@@ -225,7 +226,9 @@ $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM
                                                 </div>
                                             </td>
                                         </tr>
-                                    <?php endwhile; ?>
+                                    <?php
+                                $i+=1;
+                                endwhile; ?>
                                 </tbody>
                             </table>
                         </div>

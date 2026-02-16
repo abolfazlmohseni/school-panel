@@ -21,6 +21,7 @@ if ($search) {
 }
 
 $result = $conn->query($sql);
+$i = 1;
 ?>
 
 <!doctype html>
@@ -205,7 +206,7 @@ $result = $conn->query($sql);
                                         <?php while ($row = $result->fetch_assoc()): ?>
                                             <tr class="hover:bg-gray-50 transition-colors duration-150">
                                                 <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap">
-                                                    <?= $row['id'] ?>
+                                                    <?= $i  ?>
                                                 </td>
 
                                                 <td class="px-4 py-3 text-xs sm:text-sm whitespace-nowrap">
@@ -236,7 +237,9 @@ $result = $conn->query($sql);
                                                     </div>
                                                 </td>
                                             </tr>
-                                        <?php endwhile; ?>
+                                        <?php 
+                                    $i+=1;
+                                    endwhile; ?>
                                     <?php else: ?>
                                         <tr>
                                             <td colspan="4"
