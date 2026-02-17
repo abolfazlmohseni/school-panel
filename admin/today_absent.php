@@ -19,22 +19,40 @@ $last_name = $_SESSION['last_name'] ?? '';
 $full_name = $_SESSION['full_name'] ?? '';
 
 $today = date('Y-m-d');
+$weekday_number = date('w');
+$weekdays_persian = [
+    0 => 'یکشنبه',
+    1 => 'دوشنبه',
+    2 => 'سه‌شنبه',
+    3 => 'چهارشنبه',
+    4 => 'پنج‌شنبه',
+    5 => 'جمعه',
+    6 => 'شنبه'
+];
+$today_persian = $weekdays_persian[$weekday_number];
 
+// کوئری جدید برای گروه‌بندی بر اساس دانش‌آموز
 $query = "
     SELECT 
-        a.id,
-        a.attendance_date,
-        a.status,
+        s.id,
         s.first_name,
         s.last_name,
         s.national_code,
         s.phone,
-        c.name as class_name
+        c.name as class_name,
+        GROUP_CONCAT(
+            CONCAT(p.schedule, '|', p.day_of_week)
+            ORDER BY FIELD(p.schedule, 'زنگ 1', 'زنگ 2', 'زنگ 3', 'زنگ 4')
+            SEPARATOR ','
+        ) as absent_periods,
+        COUNT(a.id) as absent_count
     FROM attendance a
     JOIN students s ON a.student_id = s.id
     LEFT JOIN classes c ON s.class_id = c.id
+    JOIN programs p ON a.program_id = p.id
     WHERE a.attendance_date = ?
     AND a.status = 'غایب'
+    GROUP BY s.id, s.first_name, s.last_name, s.national_code, s.phone, c.name
     ORDER BY s.last_name, s.first_name
 ";
 
@@ -45,6 +63,19 @@ $result = $stmt->get_result();
 
 $absent_today = [];
 while ($row = $result->fetch_assoc()) {
+    // پردازش زنگ‌های غیبت
+    $periods = [];
+    if (!empty($row['absent_periods'])) {
+        $items = explode(',', $row['absent_periods']);
+        foreach ($items as $item) {
+            list($schedule, $day) = explode('|', $item);
+            $periods[] = [
+                'schedule' => $schedule,
+                'day' => $day
+            ];
+        }
+    }
+    $row['periods'] = $periods;
     $absent_today[] = $row;
 }
 $stmt->close();
@@ -62,20 +93,20 @@ function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
     $gy2 = ($gm > 2) ? ($gy + 1) : $gy;
-    $days = 355666 + (365 * $gy) + ((int)(($gy2 + 3) / 4)) - ((int)(($gy2 + 99) / 100)) + ((int)(($gy2 + 399) / 400)) + $gd + $g_d_m[$gm - 1];
-    $jy = -1595 + (33 * ((int)($days / 12053)));
+    $days = 355666 + (365 * $gy) + ((int) (($gy2 + 3) / 4)) - ((int) (($gy2 + 99) / 100)) + ((int) (($gy2 + 399) / 400)) + $gd + $g_d_m[$gm - 1];
+    $jy = -1595 + (33 * ((int) ($days / 12053)));
     $days %= 12053;
-    $jy += 4 * ((int)($days / 1461));
+    $jy += 4 * ((int) ($days / 1461));
     $days %= 1461;
     if ($days > 365) {
-        $jy += (int)(($days - 1) / 365);
+        $jy += (int) (($days - 1) / 365);
         $days = ($days - 1) % 365;
     }
     if ($days < 186) {
-        $jm = 1 + (int)($days / 31);
+        $jm = 1 + (int) ($days / 31);
         $jd = 1 + ($days % 31);
     } else {
-        $jm = 7 + (int)(($days - 186) / 30);
+        $jm = 7 + (int) (($days - 186) / 30);
         $jd = 1 + (($days - 186) % 30);
     }
     return array($jy, $jm, $jd);
@@ -85,18 +116,16 @@ $today_parts = explode('-', $today);
 $today_jalali = gregorian_to_jalali($today_parts[0], $today_parts[1], $today_parts[2]);
 $today_jalali_formatted = $today_jalali[0] . '/' . sprintf('%02d', $today_jalali[1]) . '/' . sprintf('%02d', $today_jalali[2]);
 
-$weekdays_persian = [
-    0 => 'یکشنبه',
-    1 => 'دوشنبه',
-    2 => 'سه‌شنبه',
-    3 => 'چهارشنبه',
-    4 => 'پنج‌شنبه',
-    5 => 'جمعه',
-    6 => 'شنبه'
-];
-
-$weekday_number = date('w');
-$today_persian = $weekdays_persian[$weekday_number];
+// تابع کمکی برای بررسی وجود زنگ خاص
+function hasPeriod($periods, $targetSchedule)
+{
+    foreach ($periods as $period) {
+        if ($period['schedule'] === $targetSchedule) {
+            return true;
+        }
+    }
+    return false;
+}
 ?>
 
 <!doctype html>
@@ -143,22 +172,55 @@ $today_persian = $weekdays_persian[$weekday_number];
         .student-row:hover {
             background-color: #f8fafc;
         }
+
+        .period-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .period-absent {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .period-present {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .periods-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
     </style>
 </head>
 
 <body class="min-h-full bg-gray-100">
     <!-- Mobile Menu Button -->
-    <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
+    <button onclick="toggleSidebar()"
+        class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden">
+    </div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
+    <aside id="sidebar"
+        class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col">
             <!-- Logo & Title -->
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
@@ -170,64 +232,98 @@ $today_persian = $weekdays_persian[$weekday_number];
             <nav class="flex-1 p-4 overflow-y-auto">
                 <ul class="space-y-2">
                     <li>
-                        <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="dashboard.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                </path>
                             </svg>
                             داشبورد
                         </a>
                     </li>
                     <li>
-                        <a href="teachers.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="teachers.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
                             </svg>
                             بخش دبیران
                         </a>
                     </li>
                     <li>
-                        <a href="classes.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="classes.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                </path>
                             </svg>
                             کلاس ها
                         </a>
                     </li>
                     <li>
-                        <a href="students.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="students.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
                             </svg>
                             دانش آموزان
                         </a>
                     </li>
                     <li>
-                        <a href="programs.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="programs.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 ounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
                             </svg>
                             برنامه زمانی
                         </a>
                     </li>
                     <li>
-                        <a href="today_absent.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium">
+                        <a href="today_absent.php"
+                            class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
                             </svg>
                             غایبین امروز
                         </a>
                     </li>
                     <li>
-                        <a href="send_sms.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                        <a href="absent_history.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            تاریخچه غیبت‌ها
+                        </a>
+                    </li>
+                    <li>
+                        <a href="send_sms.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
                             </svg>
                             ارسال پیامک
                         </a>
                     </li>
-
                 </ul>
             </nav>
+
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
@@ -252,14 +348,17 @@ $today_persian = $weekdays_persian[$weekday_number];
                 <div class="mb-8">
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">غایبین امروز</h1>
                     <p class="text-gray-600 text-sm sm:text-base">
-                        <span class="text-blue-600 font-medium">امروز <?php echo $today_persian; ?> <?php echo $today_jalali_formatted; ?> </span>
+                        <span class="text-blue-600 font-medium">امروز <?php echo $today_persian; ?>
+                            <?php echo $today_jalali_formatted; ?> </span>
                     </p>
                 </div>
                 <?php if (!empty($error)): ?>
                     <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-red-600 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
                             </svg>
                             <span class="text-red-700 font-medium">خطا: <?php echo htmlspecialchars($error); ?></span>
                         </div>
@@ -268,11 +367,14 @@ $today_persian = $weekdays_persian[$weekday_number];
                 <!-- Statistics Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
                     <!-- Total Absent Card -->
-                    <div class="stat-card bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-md p-6 text-white">
+                    <div
+                        class="stat-card bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-white/30 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636">
+                                    </path>
                                 </svg>
                             </div>
                             <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
@@ -280,14 +382,17 @@ $today_persian = $weekdays_persian[$weekday_number];
                             </div>
                         </div>
                         <h3 class="text-3xl font-bold mb-1"><?php echo $total_absent; ?></h3>
-                        <p class="text-red-100 text-sm">تعداد غایبین</p>
+                        <p class="text-red-100 text-sm">تعداد دانش‌آموزان غایب</p>
                     </div>
                     <!-- کلاس‌های دارای غایب Card -->
-                    <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
+                    <div
+                        class="stat-card bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
                             <div class="p-3 bg-white/30 rounded-lg">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                    </path>
                                 </svg>
                             </div>
                             <div class="text-xs bg-white/20 px-2 py-1 rounded-full">
@@ -335,12 +440,24 @@ $today_persian = $weekdays_persian[$weekday_number];
                             <table class="w-full">
                                 <thead class="bg-gray-50 border-b-2 border-gray-200">
                                     <tr>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">#</th>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">دانش‌آموز</th>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">کد ملی</th>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">کلاس</th>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap hidden md:table-cell">شماره تماس</th>
-                                        <!-- <th class="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">اقدامات</th> -->
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            #</th>
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            دانش‌آموز</th>
+                                        <!-- <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            کد ملی</th> -->
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            کلاس</th>
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            وضعیت زنگ‌ها</th>
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap hidden md:table-cell">
+                                            شماره تماس</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
@@ -351,19 +468,60 @@ $today_persian = $weekdays_persian[$weekday_number];
                                                     <?= $index + 1 ?>
                                                 </td>
 
-                                                <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap">
+                                                <td
+                                                    class="px-4 py-3 text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap">
                                                     <?= htmlspecialchars($student['first_name'] . ' ' . $student['last_name']) ?>
+                                                    <?php if ($student['absent_count'] > 1): ?>
+                                                        <span
+                                                            class="mr-1 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full"><?= $student['absent_count'] ?>
+                                                            زنگ</span>
+                                                    <?php endif; ?>
                                                 </td>
 
-                                                <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap font-mono">
+                                                <!-- <td
+                                                    class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap font-mono">
                                                     <?= htmlspecialchars($student['national_code']) ?>
-                                                </td>
+                                                </td> -->
 
                                                 <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
                                                     <?= htmlspecialchars($student['class_name'] ?? 'نامشخص') ?>
                                                 </td>
 
-                                                <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap hidden md:table-cell">
+                                                <td class="px-4 py-3 text-xs sm:text-sm">
+                                                    <div class="periods-container">
+                                                        <?php
+                                                        $allPeriods = ['زنگ 1', 'زنگ 2', 'زنگ 3', 'زنگ 4'];
+                                                        foreach ($allPeriods as $period):
+                                                            $isAbsent = hasPeriod($student['periods'], $period);
+                                                            ?>
+                                                            <div
+                                                                class="period-badge <?php echo $isAbsent ? 'period-absent' : 'period-present'; ?>">
+                                                                <?php if ($isAbsent): ?>
+                                                                    <span class="flex items-center gap-1">
+                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                                            viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                                        </svg>
+                                                                        <?php echo $period; ?>
+                                                                    </span>
+                                                                <?php else: ?>
+                                                                    <span class="flex items-center gap-1">
+                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                                            viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                        </svg>
+                                                                        <?php echo $period; ?>
+                                                                    </span>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                </td>
+
+                                                <td
+                                                    class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap hidden md:table-cell">
                                                     <?php if (!empty($student['phone'])): ?>
                                                         <span class="text-green-600 font-medium">
                                                             <?= htmlspecialchars($student['phone']) ?>
@@ -376,14 +534,21 @@ $today_persian = $weekdays_persian[$weekday_number];
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="6" class="text-center px-4 py-8 text-gray-500 text-sm sm:text-base">
+                                            <td colspan="6"
+                                                class="text-center px-4 py-8 text-gray-500 text-sm sm:text-base">
                                                 <div class="flex flex-col items-center justify-center">
-                                                    <svg class="w-16 h-16 text-green-500 mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    <svg class="w-16 h-16 text-green-500 mb-4" fill="none"
+                                                        stroke="currentColor" viewbox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                     </svg>
-                                                    <p class="text-lg font-medium text-gray-700 mb-2">هیچ غایبی برای امروز ثبت نشده است!</p>
-                                                    <p class="text-gray-600">امروز همه دانش‌آموزان در کلاس‌های خود حاضر بودند.</p>
-                                                    <a href="dashboard.php" class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                                    <p class="text-lg font-medium text-gray-700 mb-2">هیچ غایبی برای امروز
+                                                        ثبت نشده است!</p>
+                                                    <p class="text-gray-600">امروز همه دانش‌آموزان در کلاس‌های خود حاضر
+                                                        بودند.</p>
+                                                    <a href="dashboard.php"
+                                                        class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                                         بازگشت به داشبورد
                                                     </a>
                                                 </div>
@@ -401,10 +566,14 @@ $today_persian = $weekdays_persian[$weekday_number];
                 <!-- Info Box -->
                 <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
                     <p class="text-red-800 text-xs sm:text-sm flex items-start">
-                        <svg class="w-5 h-5 ml-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        <svg class="w-5 h-5 ml-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                            viewbox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z">
+                            </path>
                         </svg>
-                        لیست غایبین امروز به صورت خودکار بروز می‌شود. برای اطلاع‌رسانی به والدین از قابلیت ارسال پیامک استفاده کنید.
+                        لیست غایبین امروز به صورت خودکار بروز می‌شود. برای اطلاع‌رسانی به والدین از قابلیت ارسال پیامک
+                        استفاده کنید.
                     </p>
                 </div>
 
@@ -415,11 +584,15 @@ $today_persian = $weekdays_persian[$weekday_number];
 
 
                         <!-- Edit Students -->
-                        <a href="students.php" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-orange-500 transition-all">
+                        <a href="students.php"
+                            class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-orange-500 transition-all">
                             <div class="flex items-center gap-4">
                                 <div class="p-3 bg-orange-100 rounded-lg">
-                                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor"
+                                        viewbox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                        </path>
                                     </svg>
                                 </div>
                                 <div>
@@ -448,7 +621,7 @@ $today_persian = $weekdays_persian[$weekday_number];
             const header = table.createTHead();
             const headerRow = header.insertRow();
 
-            const headers = ['ردیف', 'نام و نام خانوادگی', 'کد ملی', 'کلاس', 'شماره تماس', 'وضعیت'];
+            const headers = ['ردیف', 'نام و نام خانوادگی', 'کد ملی', 'کلاس', 'زنگ‌های غیبت', 'تعداد زنگ', 'شماره تماس'];
             headers.forEach(headerText => {
                 const th = document.createElement('th');
                 th.textContent = headerText;
@@ -458,13 +631,15 @@ $today_persian = $weekdays_persian[$weekday_number];
             const tbody = table.createTBody();
             <?php foreach ($absent_today as $index => $student): ?>
                 const row = tbody.insertRow();
+                const periods = '<?php echo implode(', ', array_column($student['periods'], 'schedule')); ?>';
                 const cells = [
                     <?php echo $index + 1; ?>,
                     '<?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?>',
                     '<?php echo htmlspecialchars($student['national_code']); ?>',
                     '<?php echo htmlspecialchars($student['class_name'] ?? 'نامشخص'); ?>',
-                    '<?php echo htmlspecialchars($student['phone'] ?? 'ندارد'); ?>',
-                    '<?php echo !empty($student['phone']) ? 'قابل پیامک' : 'فاقد شماره'; ?>'
+                    periods,
+                    '<?php echo $student['absent_count']; ?> زنگ',
+                    '<?php echo htmlspecialchars($student['phone'] ?? 'ندارد'); ?>'
                 ];
 
                 cells.forEach(cellData => {
@@ -497,7 +672,7 @@ $today_persian = $weekdays_persian[$weekday_number];
             alert('فایل اکسل با موفقیت دانلود شد.');
         }
 
-        setTimeout(function() {
+        setTimeout(function () {
             location.reload();
         }, 5 * 60 * 1000);
     </script>
