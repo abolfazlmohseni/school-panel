@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../user/config.php';
+require_once '../config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: /login.php");
@@ -22,7 +22,7 @@ $msg = $_SESSION['msg'] ?? '';
 unset($_SESSION['msg']);
 
 $res = $conn->query("SELECT id, first_name, last_name, username, created_at FROM users WHERE role='teacher' ORDER BY id DESC");
-$i=1;
+$i = 1;
 ?>
 
 <!doctype html>
@@ -65,17 +65,20 @@ $i=1;
 
 <body class="min-h-full bg-gray-100">
     <!-- Mobile Menu Button -->
-    <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
+    <button onclick="toggleSidebar()"
+        class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden">
+    </div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
+    <aside id="sidebar"
+        class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col">
             <!-- Logo & Title -->
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
@@ -87,64 +90,98 @@ $i=1;
             <nav class="flex-1 p-4 overflow-y-auto">
                 <ul class="space-y-2">
                     <li>
-                        <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="dashboard.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                </path>
                             </svg>
                             داشبورد
                         </a>
                     </li>
                     <li>
-                        <a href="teachers.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
+                        <a href="teachers.php"
+                            class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
                             </svg>
                             بخش دبیران
                         </a>
                     </li>
                     <li>
-                        <a href="classes.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="classes.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                </path>
                             </svg>
                             کلاس ها
                         </a>
                     </li>
                     <li>
-                        <a href="students.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="students.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
                             </svg>
                             دانش آموزان
                         </a>
                     </li>
                     <li>
-                        <a href="programs.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="programs.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 ounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
                             </svg>
                             برنامه زمانی
                         </a>
                     </li>
                     <li>
-                        <a href="today_absent.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                        <a href="today_absent.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
                             </svg>
                             غایبین امروز
                         </a>
                     </li>
                     <li>
-                        <a href="send_sms.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                        <a href="absent_history.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            تاریخچه غیبت‌ها
+                        </a>
+                    </li>
+                    <li>
+                        <a href="send_sms.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
                             </svg>
                             ارسال پیامک
                         </a>
                     </li>
-
                 </ul>
             </nav>
+
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
@@ -172,7 +209,8 @@ $i=1;
                         <!-- Action Bar -->
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                             <h2 class="text-lg sm:text-xl font-semibold text-gray-900">مدیریت دبیران</h2>
-                            <a href="teacher_add.php" class="w-full sm:w-auto px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 text-center text-sm sm:text-base">
+                            <a href="teacher_add.php"
+                                class="w-full sm:w-auto px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 text-center text-sm sm:text-base">
                                 افزودن دبیر جدید
                             </a>
                         </div>
@@ -189,20 +227,37 @@ $i=1;
                             <table class="w-full">
                                 <thead class="bg-gray-50 border-b-2 border-gray-200">
                                     <tr>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">#</th>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">نام و نام خانوادگی</th>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">نام کاربری</th>
-                                        <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap hidden sm:table-cell">تاریخ ایجاد</th>
-                                        <th class="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">اقدامات</th>
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            #</th>
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            نام و نام خانوادگی</th>
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            نام کاربری</th>
+                                        <th
+                                            class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap hidden sm:table-cell">
+                                            تاریخ ایجاد</th>
+                                        <th
+                                            class="px-4 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            اقدامات</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
                                     <?php while ($row = $res->fetch_assoc()): ?>
-                                        <tr class="hover:bg-gray-50 transition-colors duration-150" id="row-<?= $row['id'] ?>">
-                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap"><?= htmlspecialchars($i) ?></td>
-                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap"><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
-                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap"><?= htmlspecialchars($row['username']) ?></td>
-                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-500 whitespace-nowrap hidden sm:table-cell"><?= htmlspecialchars($row['created_at']) ?></td>
+                                        <tr class="hover:bg-gray-50 transition-colors duration-150"
+                                            id="row-<?= $row['id'] ?>">
+                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap">
+                                                <?= htmlspecialchars($i) ?></td>
+                                            <td
+                                                class="px-4 py-3 text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap">
+                                                <?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
+                                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
+                                                <?= htmlspecialchars($row['username']) ?></td>
+                                            <td
+                                                class="px-4 py-3 text-xs sm:text-sm text-gray-500 whitespace-nowrap hidden sm:table-cell">
+                                                <?= htmlspecialchars($row['created_at']) ?></td>
                                             <td class="px-4 py-3 text-center whitespace-nowrap">
                                                 <div class="flex justify-center gap-2">
                                                     <a href="teacher_edit.php?id=<?= $row['id'] ?>"
@@ -210,25 +265,29 @@ $i=1;
                                                         ویرایش
                                                     </a>
                                                     <!-- دکمه حذف -->
-                                                    <button onclick="showConfirm(<?= $row['id'] ?>)" class="delete-btn-<?= $row['id'] ?> px-3 py-1.5 bg-red-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
+                                                    <button onclick="showConfirm(<?= $row['id'] ?>)"
+                                                        class="delete-btn-<?= $row['id'] ?> px-3 py-1.5 bg-red-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
                                                         حذف
                                                     </button>
 
                                                     <!-- تایید حذف -->
-                                                    <div class="delete-confirm delete-confirm-<?= $row['id'] ?> gap-2" style="display:none;">
-                                                        <a href="teachers.php?delete_id=<?= $row['id'] ?>" class="px-3 py-1.5 bg-red-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
+                                                    <div class="delete-confirm delete-confirm-<?= $row['id'] ?> gap-2"
+                                                        style="display:none;">
+                                                        <a href="teachers.php?delete_id=<?= $row['id'] ?>"
+                                                            class="px-3 py-1.5 bg-red-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
                                                             تأیید
                                                         </a>
-                                                        <button onclick="hideConfirm(<?= $row['id'] ?>)" class="px-3 py-1.5 bg-gray-300 text-gray-700 text-xs sm:text-sm font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                                                        <button onclick="hideConfirm(<?= $row['id'] ?>)"
+                                                            class="px-3 py-1.5 bg-gray-300 text-gray-700 text-xs sm:text-sm font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200">
                                                             لغو
                                                         </button>
                                                     </div>
                                                 </div>
                                             </td>
                                         </tr>
-                                    <?php
-                                $i+=1;
-                                endwhile; ?>
+                                        <?php
+                                        $i += 1;
+                                    endwhile; ?>
                                 </tbody>
                             </table>
                         </div>
