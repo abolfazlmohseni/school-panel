@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../user/config.php';
+require_once '../config.php';
 
 // بررسی ورود مدیر
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
@@ -44,7 +44,7 @@ WHERE u.role = 'teacher'
 ORDER BY $order_column $direction, p.id DESC";
 
 $result = $conn->query($sql);
-$i =1;
+$i = 1;
 ?>
 
 <!doctype html>
@@ -159,7 +159,7 @@ $i =1;
                     </li>
                     <li>
                         <a href="programs.php"
-                            class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
+                            class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 ounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
@@ -170,13 +170,26 @@ $i =1;
                     </li>
                     <li>
                         <a href="today_absent.php"
-                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z">
                                 </path>
                             </svg>
                             غایبین امروز
+                        </a>
+                    </li>
+                    <li>
+                        <a href="absent_history.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            تاریخچه غیبت‌ها
                         </a>
                     </li>
                     <li>
@@ -190,7 +203,6 @@ $i =1;
                             ارسال پیامک
                         </a>
                     </li>
-
                 </ul>
             </nav>
 
@@ -238,10 +250,10 @@ $i =1;
                                             <a href="?order=class_name&dir=<?= ($order == 'class_name' && $direction == 'asc') ? 'desc' : 'asc' ?>"
                                                 class="hover:text-blue-600 flex items-center gap-1">
                                                 نام کلاس
-                                                                                <?php if ($order == 'class_name'): ?>
+                                                <?php if ($order == 'class_name'): ?>
                                                     <span
                                                         class="text-blue-600"><?= $direction == 'asc' ? '↑' : '↓' ?></span>
-                                                                                <?php endif; ?>
+                                                <?php endif; ?>
                                             </a>
                                         </th>
                                         <th
@@ -249,10 +261,10 @@ $i =1;
                                             <a href="?order=lesson_name&dir=<?= ($order == 'lesson_name' && $direction == 'asc') ? 'desc' : 'asc' ?>"
                                                 class="hover:text-blue-600 flex items-center gap-1">
                                                 درس
-                                                                                <?php if ($order == 'lesson_name'): ?>
+                                                <?php if ($order == 'lesson_name'): ?>
                                                     <span
                                                         class="text-blue-600"><?= $direction == 'asc' ? '↑' : '↓' ?></span>
-                                                                                <?php endif; ?>
+                                                <?php endif; ?>
                                             </a>
                                         </th>
                                         <th
@@ -260,10 +272,10 @@ $i =1;
                                             <a href="?order=teacher_name&dir=<?= ($order == 'teacher_name' && $direction == 'asc') ? 'desc' : 'asc' ?>"
                                                 class="hover:text-blue-600 flex items-center gap-1">
                                                 دبیر
-                                                                                <?php if ($order == 'teacher_name'): ?>
+                                                <?php if ($order == 'teacher_name'): ?>
                                                     <span
                                                         class="text-blue-600"><?= $direction == 'asc' ? '↑' : '↓' ?></span>
-                                                                                <?php endif; ?>
+                                                <?php endif; ?>
                                             </a>
                                         </th>
                                         <th
@@ -271,10 +283,10 @@ $i =1;
                                             <a href="?order=day_of_week&dir=<?= ($order == 'day_of_week' && $direction == 'asc') ? 'desc' : 'asc' ?>"
                                                 class="hover:text-blue-600 flex items-center gap-1">
                                                 روز هفته
-                                                                                <?php if ($order == 'day_of_week'): ?>
+                                                <?php if ($order == 'day_of_week'): ?>
                                                     <span
                                                         class="text-blue-600"><?= $direction == 'asc' ? '↑' : '↓' ?></span>
-                                                                                <?php endif; ?>
+                                                <?php endif; ?>
                                             </a>
                                         </th>
                                         <th
@@ -348,9 +360,9 @@ $i =1;
                                                     </div>
                                                 </td>
                                             </tr>
-                                        <?php 
-                                    $i+=1;
-                                    endwhile; ?>
+                                            <?php
+                                            $i += 1;
+                                        endwhile; ?>
                                     <?php else: ?>
                                         <tr>
                                             <td colspan="8"

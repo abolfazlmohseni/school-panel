@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../user/config.php';
+require_once '../config.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header('Location: ../login.php');
@@ -169,13 +169,26 @@ $i = 1;
                     </li>
                     <li>
                         <a href="today_absent.php"
-                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z">
                                 </path>
                             </svg>
                             غایبین امروز
+                        </a>
+                    </li>
+                    <li>
+                        <a href="absent_history.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            تاریخچه غیبت‌ها
                         </a>
                     </li>
                     <li>
@@ -189,7 +202,6 @@ $i = 1;
                             ارسال پیامک
                         </a>
                     </li>
-
                 </ul>
             </nav>
 

@@ -36,17 +36,20 @@
 
 <body class="min-h-full bg-gray-100">
     <!-- Mobile Menu Button -->
-    <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
+    <button onclick="toggleSidebar()"
+        class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
     </button>
 
     <!-- Overlay for mobile -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden">
+    </div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
+    <aside id="sidebar"
+        class="sidebar sidebar-hidden lg:sidebar-hidden-false fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-40">
         <div class="h-full flex flex-col">
             <!-- Logo & Title -->
             <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-800">
@@ -58,62 +61,95 @@
             <nav class="flex-1 p-4 overflow-y-auto">
                 <ul class="space-y-2">
                     <li>
-                        <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="dashboard.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                </path>
                             </svg>
                             داشبورد
                         </a>
                     </li>
                     <li>
-                        <a href="teachers.php" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
+                        <a href="teachers.php"
+                            class="flex items-center gap-3 px-4 py-3 text-white bg-blue-600 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
                             </svg>
                             بخش دبیران
                         </a>
                     </li>
                     <li>
-                        <a href="classes.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="classes.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                </path>
                             </svg>
                             کلاس ها
                         </a>
                     </li>
                     <li>
-                        <a href="students.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="students.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
                             </svg>
                             دانش آموزان
                         </a>
                     </li>
                     <li>
-                        <a href="programs.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                        <a href="programs.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 ounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
                             </svg>
                             برنامه زمانی
                         </a>
                     </li>
                     <li>
-                        <a href="today_absent.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                        <a href="today_absent.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.157 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
                             </svg>
                             غایبین امروز
                         </a>
                     </li>
                     <li>
-                        <a href="send_sms.php" class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                        <a href="absent_history.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            تاریخچه غیبت‌ها
+                        </a>
+                    </li>
+                    <li>
+                        <a href="send_sms.php"
+                            class="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
                             </svg>
                             ارسال پیامک
                         </a>
                     </li>
-
                 </ul>
             </nav>
 
@@ -147,36 +183,52 @@
                         <form action="teacher_add_action.php" method="POST" class="space-y-6">
                             <!-- First Name -->
                             <div>
-                                <label for="first_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام
+                                <label for="first_name"
+                                    class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام
                                     <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="first_name" autofocus name="first_name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام را وارد کنید">
+                                <input type="text" id="first_name" autofocus name="first_name" required
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base"
+                                    placeholder="نام را وارد کنید">
                             </div>
                             <!-- Last Name -->
                             <div>
-                                <label for="last_name" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام خانوادگی
+                                <label for="last_name"
+                                    class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام خانوادگی
                                     <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="last_name" name="last_name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام خانوادگی را وارد کنید">
+                                <input type="text" id="last_name" name="last_name" required
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base"
+                                    placeholder="نام خانوادگی را وارد کنید">
                             </div>
                             <!-- Username -->
                             <div>
-                                <label for="username" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> نام کاربری
+                                <label for="username" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
+                                    نام کاربری
                                     <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="username" name="username" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="نام کاربری را وارد کنید">
+                                <input type="text" id="username" name="username" required
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base"
+                                    placeholder="نام کاربری را وارد کنید">
                             </div>
                             <!-- Password -->
                             <div>
-                                <label for="password" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base"> رمز عبور
+                                <label for="password" class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
+                                    رمز عبور
                                     <span class="text-red-500">*</span>
                                 </label>
-                                <input type="password" id="password" name="password" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base" placeholder="رمز عبور را وارد کنید">
+                                <input type="password" id="password" name="password" required
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 input-focus transition-all duration-200 text-sm sm:text-base"
+                                    placeholder="رمز عبور را وارد کنید">
                             </div>
                             <!-- Action Buttons -->
                             <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                                <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base"> افزودن دبیر </button>
-                                <a href="teachers.php" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base"> بازگشت به لیست دبیران </a>
+                                <button type="submit"
+                                    class="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm sm:text-base">
+                                    افزودن دبیر </button>
+                                <a href="teachers.php"
+                                    class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 text-center text-sm sm:text-base">
+                                    بازگشت به لیست دبیران </a>
                             </div>
                         </form>
                     </div>
