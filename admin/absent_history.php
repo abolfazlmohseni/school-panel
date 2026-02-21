@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '../../user/config.php';
-require_once '../includes/jdf.php'; // اضافه کردن کتابخانه jdf
+require_once '../config.php';
+require_once '../includes/jdf.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
@@ -15,16 +15,12 @@ $last_name = $_SESSION['last_name'] ?? '';
 // تابع جدید برای تمیز کردن تاریخ دریافتی
 function clean_jalali_date($date)
 {
-    // اگر تاریخ خالی باشد
     if (empty($date)) {
         return '';
     }
 
-    // جایگزین کردن %2F با /
     $date = str_replace('%2F', '/', $date);
     $date = urldecode($date);
-
-    // حذف کاراکترهای غیرمجاز
     $date = preg_replace('/[^0-9\/]/', '', $date);
 
     return $date;
@@ -32,7 +28,6 @@ function clean_jalali_date($date)
 
 // پردازش تاریخ‌ها
 $error = '';
-$debug_info = '';
 
 // دریافت مقادیر از GET و تمیز کردن آنها
 $jalali_from_raw = isset($_GET['jalali_from']) ? $_GET['jalali_from'] : '';
@@ -43,14 +38,13 @@ $class_filter = isset($_GET['class_id']) ? $_GET['class_id'] : '';
 $jalali_from = clean_jalali_date($jalali_from_raw);
 $jalali_to = clean_jalali_date($jalali_to_raw);
 
-// تنظیم تاریخ‌های پیش‌فرض (7 روز اخیر) اگر تاریخ‌ها خالی باشند
+// تنظیم تاریخ‌های پیش‌فرض
 $use_default_dates = false;
 if (empty($jalali_from) || empty($jalali_to)) {
     $use_default_dates = true;
     $date_from = date('Y-m-d', strtotime('-7 days'));
     $date_to = date('Y-m-d');
 
-    // برای نمایش در فرم
     $from_parts = explode('-', $date_from);
     $to_parts = explode('-', $date_to);
     $jalali_from_arr = gregorian_to_jalali($from_parts[0], $from_parts[1], $from_parts[2]);
@@ -58,7 +52,6 @@ if (empty($jalali_from) || empty($jalali_to)) {
     $jalali_from = $jalali_from_arr[0] . '/' . sprintf('%02d', $jalali_from_arr[1]) . '/' . sprintf('%02d', $jalali_from_arr[2]);
     $jalali_to = $jalali_to_arr[0] . '/' . sprintf('%02d', $jalali_to_arr[1]) . '/' . sprintf('%02d', $jalali_to_arr[2]);
 } else {
-    // تبدیل تاریخ شمسی به میلادی با استفاده از jdf.php
     $from_parts = explode('/', $jalali_from);
     $to_parts = explode('/', $jalali_to);
 
@@ -68,15 +61,12 @@ if (empty($jalali_from) || empty($jalali_to)) {
         is_numeric($to_parts[0]) && is_numeric($to_parts[1]) && is_numeric($to_parts[2])
     ) {
 
-        // استفاده از تابع jdf برای تبدیل
         $greg_from = jalali_to_gregorian($from_parts[0], $from_parts[1], $from_parts[2]);
         $greg_to = jalali_to_gregorian($to_parts[0], $to_parts[1], $to_parts[2]);
 
-        // فرمت‌بندی تاریخ میلادی
         $date_from = sprintf("%04d-%02d-%02d", $greg_from[0], $greg_from[1], $greg_from[2]);
         $date_to = sprintf("%04d-%02d-%02d", $greg_to[0], $greg_to[1], $greg_to[2]);
 
-        // بررسی معتبر بودن تاریخ‌ها
         if (!strtotime($date_from) || !strtotime($date_to)) {
             $error = "تاریخ وارد شده معتبر نیست.";
             $use_default_dates = true;
@@ -87,12 +77,10 @@ if (empty($jalali_from) || empty($jalali_to)) {
     }
 }
 
-// اگر نیاز به استفاده از تاریخ‌های پیش‌فرض داریم
 if ($use_default_dates) {
     $date_from = date('Y-m-d', strtotime('-7 days'));
     $date_to = date('Y-m-d');
 
-    // به‌روزرسانی تاریخ‌های شمسی برای نمایش
     $from_parts = explode('-', $date_from);
     $to_parts = explode('-', $date_to);
     $jalali_from_arr = gregorian_to_jalali($from_parts[0], $from_parts[1], $from_parts[2]);
@@ -101,7 +89,7 @@ if ($use_default_dates) {
     $jalali_to = $jalali_to_arr[0] . '/' . sprintf('%02d', $jalali_to_arr[1]) . '/' . sprintf('%02d', $jalali_to_arr[2]);
 }
 
-// دریافت لیست کلاس‌ها برای فیلتر
+// دریافت لیست کلاس‌ها
 $classes_query = "SELECT id, name FROM classes ORDER BY name";
 $classes_result = $conn->query($classes_query);
 $classes = [];
@@ -111,7 +99,7 @@ if ($classes_result) {
     }
 }
 
-// ساخت کوئری اصلی - تجمیع غیبت‌ها در هر روز
+// ساخت کوئری اصلی
 $query = "
     SELECT 
         a.attendance_date,
@@ -149,7 +137,6 @@ if (!empty($class_filter)) {
 $query .= " GROUP BY a.attendance_date, s.id, s.first_name, s.last_name, s.national_code, s.phone, c.id, c.name";
 $query .= " ORDER BY a.attendance_date DESC, s.last_name, s.first_name";
 
-// اجرای کوئری با بررسی خطا
 $absent_history = [];
 if ($stmt = $conn->prepare($query)) {
     $stmt->bind_param($types, ...$params);
@@ -158,12 +145,8 @@ if ($stmt = $conn->prepare($query)) {
         while ($row = $result->fetch_assoc()) {
             $absent_history[] = $row;
         }
-    } else {
-        $error = "خطا در اجرای کوئری: " . $stmt->error;
     }
     $stmt->close();
-} else {
-    $error = "خطا در آماده‌سازی کوئری: " . $conn->error;
 }
 
 // آمار کلی
@@ -206,9 +189,6 @@ $last_month_start_jalali = gregorian_to_jalali($last_month_start_parts[0], $last
 $last_month_end_jalali = gregorian_to_jalali($last_month_end_parts[0], $last_month_end_parts[1], $last_month_end_parts[2]);
 $last_month_start_jalali_str = $last_month_start_jalali[0] . '/' . sprintf('%02d', $last_month_start_jalali[1]) . '/' . sprintf('%02d', $last_month_start_jalali[2]);
 $last_month_end_jalali_str = $last_month_end_jalali[0] . '/' . sprintf('%02d', $last_month_end_jalali[1]) . '/' . sprintf('%02d', $last_month_end_jalali[2]);
-
-// اطلاعات دیباگ
-$debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاریخ میلادی: از $date_from تا $date_to | کلاس: " . ($class_filter ?: 'همه');
 ?>
 
 <!doctype html>
@@ -219,10 +199,14 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
     <title>تاریخچه غیبت‌ها</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="../styles/output.css">
-    <!-- اضافه کردن کتابخانه تاریخ شمسی -->
-    <!-- <link rel="stylesheet" href="https://unpkg.com/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.css">
-    <script type="text/javascript"
-        src="https://unpkg.com/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.js"></script> -->
+
+    <!-- اضافه کردن فایل‌های محلی jalalidatepicker -->
+    <link rel="stylesheet" href="./style/jalalidatepicker.min.css">
+    <script src="./js/jalalidatepicker.min.js"></script>
+
+    <!-- اضافه کردن xlsx از فایل محلی -->
+    <script src="../assets/xlsx/xlsx.full.min.js"></script>
+
     <style>
         body {
             box-sizing: border-box;
@@ -305,27 +289,24 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
             padding: 0 6px;
         }
 
-        .debug-info {
-            background-color: #f3f4f6;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            color: #4b5563;
-            direction: ltr;
-            text-align: left;
-        }
-
-        /* استایل برای input تاریخ */
         .jalali-date-input {
             direction: ltr;
             text-align: left;
         }
+
+        /* رفع مشکل نمایش تقویم */
+        .jdp-container {
+            z-index: 9999 !important;
+        }
+
+        input[data-jdp] {
+            background-color: #fff !important;
+            cursor: pointer !important;
+        }
     </style>
 </head>
 
-<body class="min-h-full bg-gray-100">
+<body class="min-h-full bg-gray-100" onload="initializeDatepicker()">
     <!-- Mobile Menu Button -->
     <button onclick="toggleSidebar()"
         class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg">
@@ -446,7 +427,7 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/logout.php"
+                <a href="../logout.php"
                     class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -470,8 +451,6 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
                         مشاهده و گزارش‌گیری از غیبت‌های دانش‌آموزان در بازه‌های زمانی مختلف
                     </p>
                 </div>
-
-
 
                 <!-- Statistics Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
@@ -528,27 +507,27 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
 
                         <!-- Quick Filters -->
                         <div class="flex flex-wrap gap-2 mb-6">
-                            <button
+                            <button type="button"
                                 onclick="setDateRange('<?php echo $today_jalali_str; ?>', '<?php echo $today_jalali_str; ?>')"
                                 class="filter-btn px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 border border-gray-300">
                                 امروز
                             </button>
-                            <button
+                            <button type="button"
                                 onclick="setDateRange('<?php echo $yesterday_jalali_str; ?>', '<?php echo $yesterday_jalali_str; ?>')"
                                 class="filter-btn px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 border border-gray-300">
                                 دیروز
                             </button>
-                            <button
+                            <button type="button"
                                 onclick="setDateRange('<?php echo $week_ago_jalali_str; ?>', '<?php echo $today_jalali_str; ?>')"
                                 class="filter-btn px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 border border-gray-300">
                                 این هفته
                             </button>
-                            <button
+                            <button type="button"
                                 onclick="setDateRange('<?php echo $month_start_jalali_str; ?>', '<?php echo $today_jalali_str; ?>')"
                                 class="filter-btn px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 border border-gray-300">
                                 این ماه
                             </button>
-                            <button
+                            <button type="button"
                                 onclick="setDateRange('<?php echo $last_month_start_jalali_str; ?>', '<?php echo $last_month_end_jalali_str; ?>')"
                                 class="filter-btn px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 border border-gray-300">
                                 ماه گذشته
@@ -650,7 +629,6 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
                                             $jalali_date = gregorian_to_jalali($date_parts[0], $date_parts[1], $date_parts[2]);
                                             $jalali_date_formatted = $jalali_date[0] . '/' . sprintf('%02d', $jalali_date[1]) . '/' . sprintf('%02d', $jalali_date[2]);
 
-                                            // استخراج روز هفته
                                             $timestamp = strtotime($record['attendance_date']);
                                             $weekday_number = date('w', $timestamp);
                                             $weekdays_persian = [
@@ -743,16 +721,30 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
         </div>
     </div>
 
-    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
     <script>
-        // راه‌اندازی انتخابگر تاریخ شمسی
-        jalaliDatepicker.startWatch({
-            minDate: "1390/01/01",
-            maxDate: "1410/12/29",
-            autoHide: true,
-            hideAfterChange: true,
-            showTodayBtn: true,
-            showEmptyBtn: true
+        // تابع راه‌اندازی تاریخ‌picker
+        function initializeDatepicker() {
+            if (typeof jalaliDatepicker !== 'undefined') {
+                jalaliDatepicker.startWatch({
+                    minDate: "1390/01/01",
+                    maxDate: "1410/12/29",
+                    autoHide: true,
+                    hideAfterChange: true,
+                    showTodayBtn: true,
+                    showEmptyBtn: true,
+                    format: "YYYY/MM/DD"
+                });
+
+                console.log("Datepicker initialized successfully");
+            } else {
+                console.error("jalaliDatepicker not loaded yet, retrying in 500ms");
+                setTimeout(initializeDatepicker, 500);
+            }
+        }
+
+        // اجرا بعد از لود کامل صفحه
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeDatepicker();
         });
 
         function toggleSidebar() {
@@ -769,30 +761,70 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
         }
 
         function exportToExcel() {
-            const table = document.getElementById('attendance-table');
-            let csv = [];
-            const rows = table.querySelectorAll('tr');
+            if (typeof XLSX === 'undefined') {
+                alert("کتابخانه اکسل بارگذاری نشده است!");
+                return;
+            }
 
-            rows.forEach(row => {
-                const rowData = [];
-                const cells = row.querySelectorAll('th, td');
-                cells.forEach(cell => {
-                    let text = cell.textContent.trim();
-                    // حذف اعداد اضافی از سلول نام دانش‌آموز
-                    if (cell.querySelector('.absent-count')) {
-                        text = text.replace(/[0-9]+/g, '').trim();
-                    }
-                    rowData.push(`"${text}"`);
+            const table = document.getElementById('attendance-table');
+            const rows = table.querySelectorAll('tbody tr');
+            const headers = ['ردیف', 'تاریخ', 'روز هفته', 'نام دانش‌آموز', 'کلاس', 'زنگ‌های غیبت', 'شماره تماس'];
+
+            const data = [];
+            data.push(headers);
+
+            rows.forEach((row, index) => {
+                if (row.querySelector('td[colspan]')) return;
+
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 5) return;
+
+                const dateCell = cells[1].querySelector('div.font-medium')?.textContent.trim() || cells[1].textContent.trim();
+                const weekday = cells[1].querySelector('div.text-xs')?.textContent.trim() || '';
+
+                const nameCell = cells[2];
+                const nameText = nameCell.textContent.trim();
+                const studentName = nameText.replace(/[0-9]+/g, '').trim();
+
+                const className = cells[3].textContent.trim();
+
+                const periods = [];
+                cells[4].querySelectorAll('.period-badge').forEach(badge => {
+                    periods.push(badge.textContent.trim());
                 });
-                csv.push(rowData.join(','));
+                const periodsText = periods.join(' - ');
+
+                let phone = cells[5]?.textContent.trim() || '';
+                if (phone === 'ندارد') phone = '';
+
+                data.push([
+                    index + 1,
+                    dateCell,
+                    weekday,
+                    studentName,
+                    className,
+                    periodsText,
+                    phone
+                ]);
             });
 
-            const csvContent = csv.join('\n');
-            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `تاریخچه_غیبت‌ها_<?php echo date('Y-m-d'); ?>.csv`;
-            link.click();
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+
+            const colWidths = [
+                { wch: 5 },  // ردیف
+                { wch: 12 }, // تاریخ
+                { wch: 10 }, // روز هفته
+                { wch: 25 }, // نام دانش‌آموز
+                { wch: 15 }, // کلاس
+                { wch: 30 }, // زنگ‌های غیبت
+                { wch: 17 }  // شماره تماس
+            ];
+            ws['!cols'] = colWidths;
+
+            XLSX.utils.book_append_sheet(wb, ws, 'تاریخچه غیبت‌ها');
+            const fileName = `تاریخچه_غیبت‌ها_${new Date().toLocaleDateString('fa-IR').replace(/\//g, '-')}.xlsx`;
+            XLSX.writeFile(wb, fileName);
         }
 
         // اضافه کردن validation برای فرم قبل از ارسال
@@ -800,7 +832,6 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
             const fromDate = document.getElementById('jalali_from').value;
             const toDate = document.getElementById('jalali_to').value;
 
-            // بررسی فرمت تاریخ
             const datePattern = /^\d{4}\/\d{2}\/\d{2}$/;
 
             if (fromDate && !datePattern.test(fromDate)) {
@@ -814,8 +845,6 @@ $debug_info = "تاریخ شمسی: از $jalali_from تا $jalali_to | تاری
                 alert('فرمت تاریخ پایان صحیح نیست. لطفاً به صورت 1403/01/01 وارد کنید.');
                 return;
             }
-
-            // اگر تاریخ‌ها معتبر هستند، اجازه ارسال فرم داده می‌شود
         });
     </script>
 </body>

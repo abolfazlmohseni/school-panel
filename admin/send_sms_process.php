@@ -5,11 +5,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 error_log("send_sms_process.php شروع شد - POST: " . print_r($_POST, true));
-require_once '../../user/config.php';
-
-// تنظیمات SMS.ir
-$smsir_api_key = "rtAYYqugrjYU9Ut3d4HCGVBq7YRTWTjxGTB72TMEd3UOEtYk"; // کلید API شما
-$smsir_line_number = "300021151796"; // شماره خط شما
+require_once '../config.php';
 
 // تنظیمات SMS.ir
 $smsir_api_key = "rtAYYqugrjYU9Ut3d4HCGVBq7YRTWTjxGTB72TMEd3UOEtYk"; // کلید API شما
@@ -22,6 +18,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 $message = trim($_POST['message'] ?? '');
+$selectedStudentsJson = $_POST['selected_students'] ?? '[]';
+$selectedStudents = json_decode($selectedStudentsJson, true);
 
 if (empty($message)) {
     $_SESSION['sms_error'] = 'متن پیامک نمی‌تواند خالی باشد.';
@@ -35,64 +33,32 @@ if (strlen($message) > 160) {
     exit();
 }
 
-$today = date('Y-m-d');
-
-try {
-    $stmt = $conn->prepare("
-        SELECT DISTINCT
-            s.id as student_id,
-            s.first_name,
-            s.last_name,
-            s.phone,
-            c.name as class_name,
-            c.id as class_id
-        FROM attendance a
-        JOIN students s ON a.student_id = s.id
-        JOIN programs p ON a.program_id = p.id
-        JOIN classes c ON p.class_id = c.id
-        WHERE a.attendance_date = ?
-        AND a.status = 'غایب'
-        AND s.phone IS NOT NULL
-        AND s.phone != ''
-        AND TRIM(s.phone) != ''
-        AND LENGTH(TRIM(s.phone)) >= 10
-        ORDER BY c.name, s.last_name, s.first_name
-    ");
-
-    if (!$stmt) {
-        throw new Exception("خطای آماده‌سازی کوئری: " . $conn->error);
-    }
-
-    $stmt->bind_param("s", $today);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $recipients = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-} catch (Exception $e) {
-    $_SESSION['sms_error'] = 'خطا در دریافت داده‌ها: ' . $e->getMessage();
-    error_log($e->getMessage());
+if (empty($selectedStudents)) {
+    $_SESSION['sms_error'] = 'هیچ دانش‌آموزی برای ارسال انتخاب نشده است.';
     header("Location: send_sms.php");
     exit();
 }
+
+$today = date('Y-m-d');
 
 function gregorian_to_jalali($gy, $gm, $gd)
 {
     $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
     $gy2 = ($gm > 2) ? ($gy + 1) : $gy;
-    $days = 355666 + (365 * $gy) + ((int)(($gy2 + 3) / 4)) - ((int)(($gy2 + 99) / 100)) + ((int)(($gy2 + 399) / 400)) + $gd + $g_d_m[$gm - 1];
-    $jy = -1595 + (33 * ((int)($days / 12053)));
+    $days = 355666 + (365 * $gy) + ((int) (($gy2 + 3) / 4)) - ((int) (($gy2 + 99) / 100)) + ((int) (($gy2 + 399) / 400)) + $gd + $g_d_m[$gm - 1];
+    $jy = -1595 + (33 * ((int) ($days / 12053)));
     $days %= 12053;
-    $jy += 4 * ((int)($days / 1461));
+    $jy += 4 * ((int) ($days / 1461));
     $days %= 1461;
     if ($days > 365) {
-        $jy += (int)(($days - 1) / 365);
+        $jy += (int) (($days - 1) / 365);
         $days = ($days - 1) % 365;
     }
     if ($days < 186) {
-        $jm = 1 + (int)($days / 31);
+        $jm = 1 + (int) ($days / 31);
         $jd = 1 + ($days % 31);
     } else {
-        $jm = 7 + (int)(($days - 186) / 30);
+        $jm = 7 + (int) (($days - 186) / 30);
         $jd = 1 + (($days - 186) % 30);
     }
     return array($jy, $jm, $jd);
@@ -106,22 +72,6 @@ $success_count = 0;
 $failed_count = 0;
 $failed_numbers = [];
 $failed_names = [];
-
-if (count($recipients) == 0) {
-    $_SESSION['sms_result'] = [
-        'success_count' => 0,
-        'failed_count' => 0,
-        'total_count' => 0,
-        'failed_numbers' => [],
-        'failed_names' => [],
-        'message' => $message,
-        'admin_name' => $_SESSION['full_name'] ?? 'مدیر',
-        'date' => $persian_date
-    ];
-    // استفاده از جاوااسکریپت برای ریدایرکت
-    echo '<script>window.location.href = "sms_result.php";</script>';
-    exit();
-}
 
 // تابع پاکسازی و فرمت شماره تلفن
 function formatPhoneNumber($phone)
@@ -371,7 +321,8 @@ function saveSMSLog(
                 <div class='progress' id='progress'></div>
             </div>
             <div class='status'>
-                <span id='current'>0</span> از <span id='total'><?php echo count($recipients); ?></span> پیامک ارسال شد
+                <span id='current'>0</span> از <span id='total'><?php echo count($selectedStudents); ?></span> پیامک
+                ارسال شد
             </div>
             <div class='status success' id='success-count'>موفق: 0</div>
             <div class='status failed' id='failed-count'>ناموفق: 0</div>
@@ -406,7 +357,7 @@ function saveSMSLog(
             document.querySelector('.spinner').style.display = 'none';
 
             // ریدایرکت به صفحه نتایج بعد از 2 ثانیه
-            setTimeout(function() {
+            setTimeout(function () {
                 window.location.href = 'sms_result.php';
             }, 2000);
         }
@@ -415,17 +366,19 @@ function saveSMSLog(
 
 </html>
 <?php
-// ارسال پیامک‌ها
+// ارسال پیامک‌ها به دانش‌آموزان انتخاب شده
 $admin_id = $_SESSION['user_id'];
-$total_recipients = count($recipients);
+$total_recipients = count($selectedStudents);
 $sent_count = 0;
 
 ob_flush();
 flush();
 
-foreach ($recipients as $index => $recipient) {
-    $original_phone = trim($recipient['phone']);
-    $student_name = $recipient['first_name'] . ' ' . $recipient['last_name'];
+foreach ($selectedStudents as $index => $student) {
+    $original_phone = trim($student['phone']);
+    $student_name = $student['name'];
+    $student_id = $student['id'];
+    $class_id = $student['class_id'] ?? null;
 
     // بررسی اعتبار شماره تلفن
     if (!isValidPhoneNumber($original_phone)) {
@@ -437,19 +390,20 @@ foreach ($recipients as $index => $recipient) {
         saveSMSLog(
             $conn,
             $admin_id,
-            $recipient['student_id'],
+            $student_id,
             $student_name,
             $original_phone,
             '',
             'failed',
             'شماره تلفن نامعتبر',
-            $recipient['class_id']
+            $class_id
         );
 
         echo "<script>addDetail('❌ شماره نامعتبر: {$student_name}');</script>";
         echo str_repeat(' ', 1024); // برای flush کردن بافر
         ob_flush();
         flush();
+        $sent_count++;
         continue;
     }
 
@@ -458,7 +412,7 @@ foreach ($recipients as $index => $recipient) {
     // شخصی‌سازی پیام
     $personalized_message = str_replace(
         ['{name}', '{class}', '{date}'],
-        [$student_name, $recipient['class_name'], $persian_date],
+        [$student_name, $student['class'], $persian_date],
         $message
     );
 
@@ -494,13 +448,13 @@ foreach ($recipients as $index => $recipient) {
         saveSMSLog(
             $conn,
             $admin_id,
-            $recipient['student_id'],
+            $student_id,
             $student_name,
             $original_phone,
             $personalized_message,
             $status,
             $api_response,
-            $recipient['class_id']
+            $class_id
         );
 
         $sent_count++;
@@ -532,6 +486,7 @@ foreach ($recipients as $index => $recipient) {
         echo str_repeat(' ', 1024);
         ob_flush();
         flush();
+        $sent_count++;
     }
 }
 
